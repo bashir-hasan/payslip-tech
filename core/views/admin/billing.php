@@ -43,6 +43,7 @@
             <div class="field"><label class="label"><?= e(t('Max employees')) ?></label><input class="input" name="<?= e($k) ?>_employees" value="<?= e((string)$p['employees']) ?>" type="number" min="1"></div>
           </div>
           <div class="field"><label class="label"><?= e(t('Smart automation actions / month')) ?></label><input class="input" name="<?= e($k) ?>_smart" value="<?= e((string)($p['smart'] ?? 30)) ?>" type="number" min="0"><span class="hint"><?= e(t('Assistant commands, smart imports and payslip explanations. Auto payroll is unlimited.')) ?></span></div>
+          <div class="field"><label class="label"><?= e(t('Team members besides the owner')) ?></label><input class="input" name="<?= e($k) ?>_team" value="<?= e((string)($p['team'] ?? 0)) ?>" type="number" min="0" max="1000"></div>
           <?php if ($k !== 'free'): ?><div class="field"><label class="label"><?= e(t('Polar product ID')) ?></label><input class="input mono" name="<?= e($k) ?>_product_id" value="<?= e($p['product_id']) ?>" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"></div><?php endif; ?>
           <div class="field"><label class="label"><?= e(t('Badge')) ?></label><input class="input" name="<?= e($k) ?>_badge" value="<?= e($p['badge']) ?>" placeholder="<?= e(t('e.g. Most popular')) ?>"></div>
           <div class="field"><label class="label"><?= e(t('Features (one per line)')) ?></label><textarea class="textarea" name="<?= e($k) ?>_features" rows="5"><?= e($p['features']) ?></textarea></div>

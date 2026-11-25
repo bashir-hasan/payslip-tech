@@ -151,7 +151,7 @@ function auth_register(): void
     $country = strtoupper((string)input('country'));
     if (!isset(countries()[$country])) $country = default_country();
     $cid = db_insert('companies', ['name' => mb_substr($data['company'], 0, 190), 'email' => $data['email'], 'signatory_name' => mb_substr($data['name'], 0, 190), 'payslip_lang' => $country === 'BD' ? lang() : 'en', 'country' => $country, 'currency' => countries()[$country][1], 'created_at' => now()]);
-    $uid = db_insert('users', ['role' => 'employer', 'company_id' => $cid, 'name' => mb_substr($data['name'], 0, 190), 'email' => $data['email'], 'password_hash' => password_hash($pass, PASSWORD_DEFAULT), 'lang' => lang(), 'created_at' => now()]);
+    $uid = db_insert('users', ['role' => 'employer', 'company_id' => $cid, 'company_role' => 'owner', 'name' => mb_substr($data['name'], 0, 190), 'email' => $data['email'], 'password_hash' => password_hash($pass, PASSWORD_DEFAULT), 'lang' => lang(), 'created_at' => now()]);
     $pdo->commit();
     clear_old();
     login_user(db_one('SELECT * FROM users WHERE id = ?', [$uid]));
@@ -222,7 +222,10 @@ function auth_invite_form(string $token): void
         redirect('/login');
     }
     $company = db_one('SELECT name FROM companies WHERE id = ?', [$u['company_id']]);
-    render('auth/set_password', ['title' => t('Activate your account'), 'action' => '/invite/' . $token, 'u' => $u, 'intro' => sprintf(t('%s invited you to view your payslips. Choose a password to activate your account.'), $company['name'] ?? '')], 'auth');
+    $intro = $u['role'] === 'employer'
+        ? sprintf(t('%s added you to their team as %s. Choose a password to activate your account.'), $company['name'] ?? '', company_roles()[company_role($u)] ?? '')
+        : sprintf(t('%s invited you to view your payslips. Choose a password to activate your account.'), $company['name'] ?? '');
+    render('auth/set_password', ['title' => t('Activate your account'), 'action' => '/invite/' . $token, 'u' => $u, 'intro' => $intro], 'auth');
 }
 
 function auth_invite(string $token): void
@@ -238,7 +241,7 @@ function auth_invite(string $token): void
     db_update('users', ['password_hash' => password_hash($p, PASSWORD_DEFAULT), 'token' => null, 'token_expires' => null, 'status' => 'active'], 'id = ?', [$u['id']]);
     login_user(db_one('SELECT * FROM users WHERE id = ?', [$u['id']]));
     flash('success', t('Your account is active.'));
-    redirect('/me');
+    redirect(home_for($u));
 }
 
 /* ---------------- My account & two-factor ---------------- */

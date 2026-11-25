@@ -349,7 +349,7 @@ function emp_payslip_revoke(string $id): void
 function emp_verifications(): void
 {
     $c = my_company();
-    $rows = db_all('SELECT v.*, p.snapshot, r.period FROM verifications v LEFT JOIN payslips p ON p.id = v.payslip_id LEFT JOIN payroll_runs r ON r.id = p.run_id WHERE v.company_id = ? ORDER BY v.id DESC LIMIT 300', [$c['id']]);
+    $rows = db_all('SELECT v.*, COALESCE(p.snapshot, d.snapshot) AS snapshot, r.period, d.type AS doc_type FROM verifications v LEFT JOIN payslips p ON p.id = v.payslip_id LEFT JOIN payroll_runs r ON r.id = p.run_id LEFT JOIN documents d ON d.id = v.document_id WHERE v.company_id = ? ORDER BY v.id DESC LIMIT 300', [$c['id']]);
     render('app/verifications', ['title' => t('Verification log'), 'nav' => 'verifications', 'rows' => $rows], 'app');
 }
 

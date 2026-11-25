@@ -1,5 +1,6 @@
 <?php
 $r = $res['result'];
+if (($res['kind'] ?? '') === 'document') { include __DIR__ . '/verify_document.php'; return; }
 $p = $res['payslip'] ?? null;
 $cls = ['valid' => 'valid', 'revoked' => 'revoked'][$r] ?? 'invalid';
 $snap = $p['snapshot'] ?? [];
@@ -47,6 +48,7 @@ $snap = $p['snapshot'] ?? [];
         <div class="net-line"><span class="muted"><?= e(t('Net pay')) ?></span><b><?= e(money($p['net'])) ?></b></div>
       <?php endif; ?>
       <div class="tip"><?= icon('alert') ?><div><?= e(t('Compare these details with the payslip you were given. If any name, month or amount is different, the document has been altered.')) ?></div></div>
+      <?php partial('trust', ['trust' => company_trust((int)$p['company_id'])]); ?>
     <?php else: ?>
       <dl class="kv" style="margin:0"><div class="full"><dt><?= e(t('Code checked')) ?></dt><dd class="mono"><?= e($res['code'] ?: '—') ?></dd></div></dl>
     <?php endif; ?>

@@ -1,11 +1,11 @@
-# PaySlip.tech: installation and operations guide (v1.4.0)
+# PaySlip.tech: installation and operations guide (v1.5.0)
 
 Payroll + tamper-proof, QR-verifiable payslips. 20 currencies, local payslip terms (US, Canada, UK, EU,
 South Asia, Gulf, AU/NZ), English & Bangla, light/dark mode, Polar.sh subscriptions.
 Plain PHP 8.1+ and MySQL/MariaDB. No Composer, no build step.
 
 ---------------------------------------------------------------------------------------------------
-## A. Upgrading your live site from v1.0.x / v1.2.x / v1.3.x (no reinstall, no data loss)
+## A. Upgrading your live site from v1.0.x – v1.4.x (no reinstall, no data loss)
 
 1. **Back up first:** cPanel → Backup (or phpMyAdmin → Export) for the database, and download `config.php`.
 2. Upload `payslip-tech-v1.4.0.zip` to the site folder and **Extract**, choosing to overwrite files.
@@ -159,6 +159,19 @@ Admin → **Blog** → *New article*. Write in simple formatting (## headings, -
 - Three starter articles are added as **drafts**: review them, add a cover image and publish.
 - Cover images: JPG/PNG/WebP up to 4 MB, best at 1200×630.
 - Submit `https://payslip.tech/sitemap.xml` once in Google Search Console and Bing Webmaster Tools.
+
+## J. New in v1.5.0: documents, proof of income, team roles, leave and loans
+
+Upload the new files over the old ones (keep `config.php` and `uploads/`). The database updates itself on the first page load (DB version 7).
+
+- **Verified documents.** Employment letters, salary certificates and yearly income statements with a QR code and a `DC-XXXX-XXXX` code. Employees request them from **My documents**. Employers issue them from **Documents**. They verify at `/v/DC-…` and through the API like payslips.
+- **Proof of income links.** Employees bundle 3, 6 or 12 months of payslips (plus documents) into one link at **Proof of income**. They choose what the bank sees (full amounts, "net pay at least X", or no amounts) and when the link expires, and can switch it off. Every opening is logged in the employer's verification log.
+- **Employer trust.** Every verification page and API response now shows whether the employer owns its domain (TXT record check in **Settings**), whether you checked the business (**Admin → Companies → Mark checked**) and how many months of payroll it has issued.
+- **Team roles and payroll approval.** The owner invites an HR manager and an accountant from **Team**. HR prepares payroll and submits it; the accountant or owner approves and issues it. Plan limits: Free 0, Starter 2, Business 10 (editable in **Admin → Billing & plans**).
+- **Leave and attendance.** Leave types with yearly balances, requests from the employee portal, approvals, weekly holidays per company and a monthly attendance sheet. Approved unpaid leave is applied to that month's draft payroll.
+- **Loans and advances.** Add an advance once with a monthly instalment. It is deducted from each payroll until repaid and closes itself.
+
+If you edited the plan descriptions in Admin → Billing & plans, add the team lines to your text there (the defaults only apply to sites that never saved plans).
 
 ## Third-party code
 - qrcode-generator by Kazuhiko Arase — MIT licence (`assets/js/qrcode.js`).

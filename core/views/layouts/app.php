@@ -23,7 +23,7 @@ send_security_headers($appCode);
     <?php if ($co): ?>
       <div class="side-co">
         <div class="logo"><?php if ($co['logo']): ?><img src="<?= e(url('uploads/logos/' . $co['logo'])) ?>" alt=""><?php else: ?><?= e(initials($co['name'])) ?><?php endif; ?></div>
-        <div><b title="<?= e($co['name']) ?>"><?= e($co['name']) ?></b><span><?= e($cu['role'] === 'employee' ? t('Employee portal') : t('Employer')) ?></span></div>
+        <div><b title="<?= e($co['name']) ?>"><?= e($co['name']) ?></b><span><?= e($cu['role'] === 'employee' ? t('Employee portal') : (company_roles()[company_role($cu)] ?? t('Employer'))) ?></span></div>
       </div>
     <?php endif; ?>
     <nav class="nav">
@@ -33,15 +33,26 @@ send_security_headers($appCode);
         <?= $link('/app/payroll', 'payroll', 'wallet', t('Payroll')) ?>
         <?= $link('/app/payslips', 'payslips', 'file', t('Payslips')) ?>
         <?= $link('/app/verifications', 'verifications', 'shield', t('Verification log')) ?>
+        <div class="nav-label"><?= e(t('People')) ?></div>
+        <?php $lp = (int)db_val("SELECT COUNT(*) FROM leave_requests WHERE company_id = ? AND status = 'pending'", [$co['id']]); $dr = (int)db_val("SELECT COUNT(*) FROM documents WHERE company_id = ? AND status = 'requested'", [$co['id']]); ?>
+        <?= $link('/app/leave', 'leave', 'calendar', t('Leave & attendance'), $lp ?: null) ?>
+        <?= $link('/app/loans', 'loans', 'bank', t('Loans & advances')) ?>
+        <?= $link('/app/documents', 'documents', 'award', t('Documents'), $dr ?: null) ?>
         <div class="nav-label"><?= e(t('Automation')) ?></div>
         <?= $link('/app/assistant', 'assistant', 'zap', t('Smart assistant')) ?>
-        <?= $link('/app/automation', 'automation', 'clock', t('Auto payroll')) ?>
+        <?php if (company_role($cu) === 'owner'): ?><?= $link('/app/automation', 'automation', 'clock', t('Auto payroll')) ?><?php endif; ?>
         <?= $link('/app/employees/import', 'import', 'upload', t('Smart import')) ?>
+        <?php if (company_role($cu) === 'owner'): ?>
         <div class="nav-label"><?= e(t('Company')) ?></div>
         <?= $link('/app/settings', 'settings', 'settings', t('Settings')) ?>
+        <?= $link('/app/team', 'team', 'users', t('Team')) ?>
         <?php if (billing_enabled()): ?><?= $link('/app/billing', 'billing', 'wallet', t('Plan & billing')) ?><?php endif; ?>
+        <?php endif; ?>
       <?php elseif ($cu['role'] === 'employee'): ?>
         <?= $link('/me', 'me', 'file', t('My payslips')) ?>
+        <?= $link('/me/proof', 'me-proof', 'send', t('Proof of income')) ?>
+        <?= $link('/me/documents', 'me-docs', 'award', t('My documents')) ?>
+        <?= $link('/me/leave', 'me-leave', 'calendar', t('Leave & advances')) ?>
       <?php elseif ($cu['role'] === 'admin'): ?>
         <?= $link('/admin', 'admin', 'chart', t('Overview')) ?>
         <?= $link('/admin/companies', 'admin-companies', 'building', t('Companies')) ?>

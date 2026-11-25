@@ -10,9 +10,9 @@ declare(strict_types=1);
 function default_plans(): array
 {
     return [
-        'free' => ['name' => 'Free', 'price' => 0, 'interval' => 'month', 'employees' => 5, 'smart' => 30, 'product_id' => '', 'badge' => '', 'features' => "Up to 5 employees\n30 smart automation actions / month\nAuto monthly payroll\nVerified payslips with QR code\nEmployee portal\nEmail payslips\nVerification log"],
-        'starter' => ['name' => 'Starter', 'price' => 9, 'interval' => 'month', 'employees' => 30, 'smart' => 300, 'product_id' => '', 'badge' => '', 'features' => "Up to 30 employees\n300 smart automation actions / month\nEverything in Free\nCSV import & payment export\nCustom fields on payslips\nEmail support"],
-        'business' => ['name' => 'Business', 'price' => 29, 'interval' => 'month', 'employees' => 250, 'smart' => 2000, 'product_id' => '', 'badge' => 'Most popular', 'features' => "Up to 250 employees\n2,000 smart automation actions / month\nEverything in Starter\nRemove PaySlip.tech branding\nPriority verification API limits\nPriority support"],
+        'free' => ['name' => 'Free', 'price' => 0, 'interval' => 'month', 'employees' => 5, 'smart' => 30, 'team' => 0, 'product_id' => '', 'badge' => '', 'features' => "Up to 5 employees\n30 smart automation actions / month\nAuto monthly payroll\nVerified payslips with QR code\nEmployee portal\nEmail payslips\nVerification log"],
+        'starter' => ['name' => 'Starter', 'price' => 9, 'interval' => 'month', 'employees' => 30, 'smart' => 300, 'team' => 2, 'product_id' => '', 'badge' => '', 'features' => "Up to 30 employees\n300 smart automation actions / month\nEverything in Free\n2 team members (HR, accountant)\nCSV import & payment export\nCustom fields on payslips\nEmail support"],
+        'business' => ['name' => 'Business', 'price' => 29, 'interval' => 'month', 'employees' => 250, 'smart' => 2000, 'team' => 10, 'product_id' => '', 'badge' => 'Most popular', 'features' => "Up to 250 employees\n2,000 smart automation actions / month\nEverything in Starter\n10 team members with payroll approval\nRemove PaySlip.tech branding\nPriority verification API limits\nPriority support"],
     ];
 }
 

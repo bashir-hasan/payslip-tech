@@ -1,4 +1,4 @@
-<?php $draft = $run['status'] === 'draft'; ?>
+<?php $draft = $run['status'] === 'draft'; $canFin = can_do('finalize'); $canEdit = can_do('edit_payroll'); $submitter = $run['submitted_by'] ? db_val('SELECT name FROM users WHERE id = ?', [$run['submitted_by']]) : null; $approver = $run['approved_by'] ? db_val('SELECT name FROM users WHERE id = ?', [$run['approved_by']]) : null; ?>
 <div class="page-head">
   <div>
     <a class="small" href="<?= e(url('/app/payroll')) ?>">← <?= e(t('Payroll')) ?></a>
@@ -7,15 +7,32 @@
   </div>
   <div class="row">
     <a class="btn btn-light" href="<?= e(url('/app/payroll/' . $run['id'] . '/export')) ?>"><?= icon('download') ?> <?= e(t('Payment sheet (CSV)')) ?></a>
-    <?php if ($draft): ?>
+    <?php if ($draft && $canEdit): ?>
       <form method="post" action="<?= e(url('/app/payroll/' . $run['id'] . '/delete')) ?>" data-confirm="<?= e(t('Delete this draft payroll? This cannot be undone.')) ?>"><?= csrf_field() ?><button class="btn btn-danger"><?= icon('trash') ?> <?= e(t('Delete draft')) ?></button></form>
-      <form method="post" action="<?= e(url('/app/payroll/' . $run['id'] . '/finalize')) ?>" data-confirm="<?= e(t('Finalise and issue all payslips? They will be locked and become verifiable. You can revoke individual payslips later, but not edit them.')) ?>"><?= csrf_field() ?><button class="btn btn-primary"><?= icon('lock') ?> <?= e(t('Finalise & issue')) ?></button></form>
-    <?php else: ?>
+    <?php endif; ?>
+    <?php if ($draft && $canFin): ?>
+      <?php if ($run['submitted_at'] && company_role() === 'accountant'): ?>
+        <form method="post" action="<?= e(url('/app/payroll/' . $run['id'] . '/reject')) ?>" class="row" style="gap:6px"><?= csrf_field() ?><input class="input" name="note" placeholder="<?= e(t('What should HR change?')) ?>" style="width:200px"><button class="btn btn-light"><?= icon('x') ?> <?= e(t('Send back')) ?></button></form>
+      <?php endif; ?>
+      <form method="post" action="<?= e(url('/app/payroll/' . $run['id'] . '/finalize')) ?>" data-confirm="<?= e(t('Finalise and issue all payslips? They will be locked and become verifiable. You can revoke individual payslips later, but not edit them.')) ?>"><?= csrf_field() ?><button class="btn btn-primary"><?= icon('lock') ?> <?= e($run['submitted_at'] ? t('Approve & issue') : t('Finalise & issue')) ?></button></form>
+    <?php elseif ($draft): ?>
+      <?php if (!$run['submitted_at']): ?>
+        <form method="post" action="<?= e(url('/app/payroll/' . $run['id'] . '/submit')) ?>" data-confirm="<?= e(t('Send this payroll to the accountant or owner for approval?')) ?>"><?= csrf_field() ?><button class="btn btn-primary"><?= icon('send') ?> <?= e(t('Submit for approval')) ?></button></form>
+      <?php else: ?>
+        <span class="badge badge-info"><?= e(t('Waiting for approval')) ?></span>
+      <?php endif; ?>
+    <?php elseif (!$draft): ?>
       <form method="post" action="<?= e(url('/app/payroll/' . $run['id'] . '/email')) ?>" data-confirm="<?= e(t('Email each employee a link to their payslip?')) ?>"><?= csrf_field() ?><button class="btn btn-dark"><?= icon('mail') ?> <?= e(t('Email payslips')) ?></button></form>
     <?php endif; ?>
   </div>
 </div>
 
+<?php if ($draft && $run['submitted_at']): ?>
+  <div class="alert alert-info"><?= icon('send') ?><div><?= e(sprintf(t('Submitted for approval by %s on %s.'), $submitter ?: '—', date_fmt($run['submitted_at'], null, true))) ?></div></div>
+<?php endif; ?>
+<?php if (!$draft && $approver): ?>
+  <div class="alert alert-info"><?= icon('check') ?><div><?= e(sprintf(t('Approved and issued by %s.'), $approver)) ?><?= $submitter ? ' ' . e(sprintf(t('Prepared by %s.'), $submitter)) : '' ?></div></div>
+<?php endif; ?>
 <?php if ($draft): ?>
   <div class="alert alert-warn"><?= icon('alert') ?><div><?= e(t('This is a draft. Adjust bonus, overtime, advances or unpaid days below, then finalise to issue verified payslips.')) ?></div></div>
 <?php endif; ?>
@@ -34,7 +51,8 @@
     <?php foreach ($slips as $s): $a = $s['adjustments']; $chips = [];
       if ($a['bonus'] > 0) $chips[] = t('Bonus') . ' ' . money_fmt($a['bonus'], false);
       if ($a['overtime'] > 0) $chips[] = t('Overtime') . ' ' . money_fmt($a['overtime'], false);
-      if ($a['loan'] > 0) $chips[] = t('Advance') . ' −' . money_fmt($a['loan'], false);
+      if ($a['loan'] > 0) $chips[] = (!empty($a['loan_auto']) ? t('Loan instalment') : t('Advance')) . ' −' . money_fmt($a['loan'], false);
+      if (!empty($a['leave_unpaid'])) $chips[] = sprintf(t('%s days unpaid leave'), num($a['leave_unpaid'] + 0));
       if ($a['other'] > 0) $chips[] = t('Other') . ' −' . money_fmt($a['other'], false);
       if ($a['unpaid_days'] > 0) $chips[] = sprintf(t('%s unpaid days'), num($a['unpaid_days'] + 0)); ?>
       <tr id="slip-<?= e((string)$s['id']) ?>">

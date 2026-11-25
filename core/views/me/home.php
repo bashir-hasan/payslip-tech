@@ -32,4 +32,5 @@
   <div class="empty"><div class="ic-wrap"><?= icon('file', 24) ?></div><h3><?= e(t('No payslips yet')) ?></h3><p><?= e(t('Your payslips will appear here as soon as your employer issues them.')) ?></p></div>
 <?php endif; ?>
 </div>
-<div class="alert alert-info" style="margin-top:18px"><?= icon('shield') ?><div><?= e(t('Applying for a loan, visa or flat? Share the verification link or the PDF. The bank or office can scan the QR code to confirm your payslip is genuine.')) ?></div></div>
+<div class="alert alert-info" style="margin-top:18px"><?= icon('shield') ?><div><?= e(t('Applying for a loan, visa or flat? Send a proof of income link with your last few payslips, or ask for a salary certificate. The bank or office can check everything is genuine.')) ?>
+  <div class="row" style="gap:8px;margin-top:8px;flex-wrap:wrap"><a class="btn btn-primary btn-sm" href="<?= e(url('/me/proof')) ?>"><?= icon('send', 15) ?> <?= e(t('Create proof of income link')) ?></a><a class="btn btn-light btn-sm" href="<?= e(url('/me/documents')) ?>"><?= icon('award', 15) ?> <?= e(t('Letters & certificates')) ?></a></div></div></div>

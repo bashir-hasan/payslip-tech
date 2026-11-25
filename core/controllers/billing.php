@@ -103,6 +103,7 @@ function admin_billing_save(): void
         $p['price'] = $k === 'free' ? 0 : round(max(0, (float)input("{$k}_price")), 2);
         $p['employees'] = max(1, min(100000, (int)input("{$k}_employees")));
         $p['smart'] = max(0, min(1000000, (int)input("{$k}_smart", (string)($p['smart'] ?? 30))));
+        $p['team'] = max(0, min(1000, (int)input("{$k}_team", (string)($p['team'] ?? 0))));
         $p['badge'] = mb_substr(trim(strip_tags((string)input("{$k}_badge"))), 0, 30);
         $p['features'] = mb_substr(trim(strip_tags((string)input("{$k}_features"))), 0, 800);
         $pid = trim((string)input("{$k}_product_id"));

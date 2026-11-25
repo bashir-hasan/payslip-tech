@@ -78,6 +78,7 @@ function my_company(): array
     $u = require_role('employer');
     $c = db_one('SELECT * FROM companies WHERE id = ?', [$u['company_id']]);
     if (!$c) abort(403);
+    enforce_company_role($u);
     currency_context($c['currency'] ?? 'BDT');
     return $c;
 }

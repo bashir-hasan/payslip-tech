@@ -35,6 +35,12 @@ Every payslip issued on PaySlip.tech carries a unique code, a QR code and an HMA
 **Employers**
 - Monthly payroll with bonuses, overtime, advances, loans and unpaid days
 - Payslips in 20 currencies, English or Bangla, with local terms (payslip, pay stub, salary slip)
+- **Verified letters and certificates**: employment letters, salary certificates and yearly income statements with their own QR code, verified like payslips
+- **Proof of income links**: employees send a bank or embassy one link with several months of payslips checked live, choosing to show full amounts, only "net pay at least X", or no amounts, with an expiry date and an off switch
+- **Employer trust on every check**: verifiers see whether the employer proved it owns its domain, was checked by PaySlip.tech, and how long it has run payroll, so fake companies stand out
+- **Team roles and payroll approval**: HR prepares payroll, the accountant or owner approves and issues it, each with their own sign-in
+- **Leave and attendance**: leave balances, requests from the employee portal and a monthly attendance sheet; approved unpaid leave flows into payroll
+- **Loans and salary advances**: add once with a monthly instalment, deducted automatically until repaid
 - **Auto payroll**: drafts prepared before pay day, payslips issued and emailed on pay day
 - **Smart assistant**: plain-language commands in English or Bangla (`Rahim bonus 5000, Sadia 2 unpaid days`), always previewed before anything changes; runs on the server with no external AI API
 - **Smart import**: any Excel or CSV staff or salary sheet, columns matched automatically

@@ -7,7 +7,7 @@
     <?php foreach ($rows as $v): $s = json_decode((string)$v['snapshot'], true); ?>
       <tr>
         <td class="first"><b><?= e($s['employee']['name'] ?? '—') ?></b></td>
-        <td data-l="<?= e(t('Month')) ?>"><?= $v['period'] ? e(period_label($v['period'])) : '—' ?></td>
+        <td data-l="<?= e(t('Month')) ?>"><?= $v['period'] ? e(period_label($v['period'])) : (!empty($v['doc_type']) ? e(doc_types()[$v['doc_type']] ?? '') : '—') ?><?= $v['channel'] === 'pack' ? ' <span class="badge badge-info">' . e(t('Proof pack')) . '</span>' : '' ?></td>
         <td data-l="<?= e(t('Code')) ?>"><span class="codepill"><?= e($v['code_queried']) ?></span></td>
         <td data-l="<?= e(t('Result')) ?>"><?php partial('result_badge', ['r' => $v['result']]); ?></td>
         <td data-l="<?= e(t('Checked by')) ?>"><?= e(verifier_types()[$v['verifier_type'] ?? ''] ?? t('Not specified')) ?></td>

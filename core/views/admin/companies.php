@@ -13,7 +13,8 @@
         <td class="num" data-l="<?= e(t('Checks')) ?>"><?= e(num($c['checks'])) ?></td>
         <td data-l="<?= e(t('Country')) ?>"><?= e(($c['country'] ?? '') . ' · ' . ($c['currency'] ?? '')) ?></td>
         <td data-l="<?= e(t('Plan')) ?>"><form method="post" action="<?= e(url('/admin/companies/' . $c['id'] . '/plan')) ?>"><?= csrf_field() ?><select class="select" name="plan" data-autosubmit style="height:34px;width:auto;font-size:13px"><?php $cp = company_plan($c)['key']; foreach (plans() as $pk => $pp): ?><option value="<?= e($pk) ?>" <?= $cp === $pk ? 'selected' : '' ?>><?= e($pp['name']) ?></option><?php endforeach; ?></select></form></td>
-        <td data-l="<?= e(t('Status')) ?>"><?php partial('result_badge', ['r' => $c['status']]); ?></td>
+        <td data-l="<?= e(t('Status')) ?>"><?php partial('result_badge', ['r' => $c['status']]); ?>
+          <form method="post" action="<?= e(url('/admin/companies/' . $c['id'] . '/verify')) ?>" style="margin-top:4px"><?= csrf_field() ?><input type="hidden" name="on" value="<?= empty($c['business_verified_at']) ? '1' : '0' ?>"><button class="btn btn-ghost btn-sm" title="<?= e(t('Mark as a checked business after you review its trade licence or registration')) ?>"><?= icon(empty($c['business_verified_at']) ? 'shield' : 'check-circle', 14) ?> <?= e(empty($c['business_verified_at']) ? t('Mark checked') : t('Checked business')) ?></button></form></td>
         <td data-l="<?= e(t('Joined')) ?>"><?= e(date_fmt($c['created_at'])) ?></td>
         <td class="num"><form method="post" action="<?= e(url('/admin/companies/' . $c['id'] . '/status')) ?>" data-confirm="<?= e($c['status'] === 'active' ? t('Suspend this company?') : t('Reactivate this company?')) ?>"><?= csrf_field() ?><button class="btn btn-sm <?= $c['status'] === 'active' ? 'btn-danger' : 'btn-light' ?>"><?= e($c['status'] === 'active' ? t('Suspend') : t('Reactivate')) ?></button></form></td>
       </tr>

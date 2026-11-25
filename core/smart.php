@@ -256,6 +256,7 @@ function smart_apply(array $actions, array $c, int $userId): array
             case 'finalize':
                 $run = $runFor($a['period'] ?? $lastPeriod, true);
                 if (!$run || $run['status'] !== 'draft') { $out[] = '✗ ' . t('There is no draft payroll to finalise.'); break; }
+                if (current_user() && !can_do('finalize')) { $out[] = '✗ ' . t('Your role cannot finalise payroll. Submit it for approval instead.'); break; }
                 $n = payroll_finalize_run($c, $run);
                 $lastPeriod = $run['period'];
                 $out[] = '✓ ' . sprintf(t('%d verified payslips issued for %s.'), $n, period_label($run['period']));

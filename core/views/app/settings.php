@@ -51,3 +51,21 @@
   <div class="row" style="justify-content:flex-end;margin-top:18px"><button class="btn btn-primary" <?= $demo ? 'disabled' : '' ?>><?= icon('check') ?> <?= e(t('Save settings')) ?></button></div>
 </form>
 <style>@media (max-width:960px){[data-st]{grid-template-columns:1fr!important}}</style>
+
+<?php $dom = $c['domain'] ?? ''; ?>
+<div class="card" id="domain" style="margin-top:18px"><div class="card-body">
+  <div class="fieldset-title"><?= icon('globe', 16) ?> <?= e(t('Verify your company domain')) ?></div>
+  <p class="small muted"><?= e(t('Banks and embassies see "Owns the domain" next to your payslips and letters. It shows the company is real, not a fake account.')) ?></p>
+  <?php if (!empty($c['domain_verified_at'])): ?>
+    <div class="alert alert-success"><?= icon('check') ?><div><?= e(sprintf(t('%s verified on %s.'), $dom, date_fmt($c['domain_verified_at']))) ?></div></div>
+  <?php endif; ?>
+  <form method="post" action="<?= e(url('/app/settings/domain')) ?>" class="row" style="gap:8px;flex-wrap:wrap"><?= csrf_field() ?>
+    <input class="input" name="domain" value="<?= e($dom) ?>" placeholder="yourcompany.com" style="max-width:280px">
+    <button class="btn btn-light" name="action" value="save"><?= e(t('Get TXT record')) ?></button>
+    <?php if ($dom): ?><button class="btn btn-primary" name="action" value="check"><?= icon('search') ?> <?= e(t('Check now')) ?></button><?php endif; ?>
+  </form>
+  <?php if ($dom && empty($c['domain_verified_at'])): ?>
+    <p class="small" style="margin-top:12px"><?= e(t('Add this TXT record at your domain provider (Cloudflare, Namecheap, cPanel zone editor). Host / name: @')) ?></p>
+    <div class="row" style="gap:8px"><code class="mono" style="padding:8px 10px;background:var(--soft,#f4f6f8);border-radius:8px;word-break:break-all"><?= e(domain_token($c, $dom)) ?></code><button class="btn btn-light btn-sm" data-copy="<?= e(domain_token($c, $dom)) ?>" data-copied="✓"><?= icon('copy', 15) ?></button></div>
+  <?php endif; ?>
+</div></div>

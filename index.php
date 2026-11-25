@@ -16,7 +16,7 @@ $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
 // ?lang=bn / ?lang=en switches the interface language (used by hreflang URLs).
 // Payslip documents use ?lang only for the document itself.
-if ($method === 'GET' && isset($_GET['lang']) && in_array($_GET['lang'], ['en', 'bn'], true) && !str_starts_with($path, '/payslip/')) {
+if ($method === 'GET' && isset($_GET['lang']) && in_array($_GET['lang'], ['en', 'bn'], true) && !str_starts_with($path, '/payslip/') && !str_starts_with($path, '/document/')) {
     set_lang($_GET['lang']);
 }
 

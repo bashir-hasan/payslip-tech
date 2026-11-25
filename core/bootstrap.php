@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 define('ROOT', dirname(__DIR__));
 define('APP', __DIR__);
-define('APP_VERSION', '1.4.2');
+define('APP_VERSION', '1.5.0');
 
 if (!is_file(ROOT . '/config.php')) {
     header('Location: ' . rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/')), '/') . '/install.php');
@@ -32,6 +32,9 @@ require APP . '/automation.php';
 require APP . '/chatbot.php';
 require APP . '/blog.php';
 require APP . '/smart.php';
+require APP . '/team.php';
+require APP . '/hr.php';
+require APP . '/documents.php';
 
 // Security: headers, hardened session, strict CSP by default (public layout may relax it)
 base_security_headers();

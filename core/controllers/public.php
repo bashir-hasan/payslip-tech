@@ -81,6 +81,25 @@ function api_verify(string $code): void
     $res = verify_lookup($code);
     log_verification($res, 'api', (string)input('verifier') ?: null);
     $out = ['ok' => true, 'code' => $res['code'], 'result' => $res['result'], 'checked_at' => date('c')];
+    if (($res['kind'] ?? '') === 'document') {
+        $out['type'] = 'document';
+        if (in_array($res['result'], ['valid', 'revoked'], true)) {
+            $d = $res['document'];
+            $sn = $d['snapshot'];
+            $out['document'] = [
+                'kind' => $d['type'], 'employer' => $sn['company']['name'] ?? null, 'employee_name' => $sn['employee']['name'] ?? null,
+                'employee_id' => $sn['employee']['emp_code'] ?? null, 'designation' => $sn['employee']['designation'] ?? null,
+                'join_date' => $sn['employee']['join_date'] ?? null, 'currently_employed' => ($sn['employee']['status'] ?? 'active') === 'active',
+                'issued_at' => date('c', strtotime($d['issued_at'])), 'fingerprint' => fingerprint_display($d['hash']),
+            ];
+            if (!empty($sn['salary'])) $out['document']['monthly_net'] = (float)$sn['salary']['net'];
+            if (!empty($sn['totals'])) $out['document'] += ['year' => $sn['year'], 'annual_net' => (float)$sn['totals']['net'], 'months' => count($sn['months'])];
+            if ($res['result'] === 'revoked') $out['document']['revoke_reason'] = $d['revoke_reason'];
+            $tr = company_trust((int)$d['company_id']);
+            $out['employer_trust'] = ['level' => $tr['level'], 'domain' => $tr['domain'], 'business_checked' => $tr['checks']['business'], 'payroll_months' => $tr['runs']];
+        }
+        json_out($out);
+    }
     if (in_array($res['result'], ['valid', 'revoked'], true)) {
         $p = $res['payslip'];
         $out['payslip'] = [
@@ -98,6 +117,8 @@ function api_verify(string $code): void
             $out['payslip']['total_deductions'] = (float)$p['total_deductions'];
             $out['payslip']['net'] = (float)$p['net'];
         }
+        $tr = company_trust((int)$p['company_id']);
+        $out['employer_trust'] = ['level' => $tr['level'], 'domain' => $tr['domain'], 'business_checked' => $tr['checks']['business'], 'payroll_months' => $tr['runs']];
         if ($res['result'] === 'revoked') {
             $out['payslip']['revoked_at'] = date('c', strtotime($p['revoked_at']));
             $out['payslip']['revoke_reason'] = $p['revoke_reason'];

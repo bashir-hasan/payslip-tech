@@ -158,6 +158,7 @@ function verify_lookup(string $code): array
 {
     $code = strtoupper(trim($code));
     $code = preg_replace('/[^A-Z0-9-]/', '', $code);
+    if (preg_match('/^DC-[A-Z0-9]{4}-[A-Z0-9]{4}$/', $code)) return document_lookup($code);
     if (!preg_match('/^PS-[A-Z0-9]{4}-[A-Z0-9]{4}$/', $code)) {
         return ['result' => 'not_found', 'code' => $code];
     }
@@ -181,7 +182,8 @@ function log_verification(array $res, string $channel, ?string $verifierType = n
 {
     db_insert('verifications', [
         'payslip_id' => $res['payslip']['id'] ?? null,
-        'company_id' => $res['payslip']['company_id'] ?? null,
+        'document_id' => $res['document']['id'] ?? null,
+        'company_id' => $res['payslip']['company_id'] ?? ($res['document']['company_id'] ?? null),
         'code_queried' => substr((string)$res['code'], 0, 40),
         'result' => $res['result'],
         'verifier_type' => $verifierType ? substr($verifierType, 0, 30) : null,
@@ -225,6 +227,10 @@ function payroll_create_run(array $c, string $period, int $workingDays = 30, ?st
     $rid = db_insert('payroll_runs', ['company_id' => $c['id'], 'period' => $period, 'pay_date' => $payDate, 'working_days' => $workingDays, 'created_by' => $userId, 'created_at' => now()]);
     foreach ($emps as $e) {
         $adj = default_adjustments();
+        $auto = auto_adjustments($c, (int)$e['id'], $period, $workingDays);
+        $adj['loan'] = $auto['loan_auto'];
+        $adj['unpaid_days'] = $auto['leave_unpaid'];
+        $adj += $auto;
         $calc = compute_slip($e, $adj, $workingDays);
         db_insert('payslips', [
             'run_id' => $rid, 'company_id' => $c['id'], 'employee_id' => $e['id'], 'status' => 'draft',
@@ -273,12 +279,14 @@ function payroll_finalize_run(array $c, array $run): int
         $lines = ['earnings' => $calc['earnings'], 'deductions' => $calc['deductions'], 'working_days' => $calc['working_days'], 'paid_days' => $calc['paid_days'], 'note' => $adj['note'] ?? ''];
         $row = ['code' => new_payslip_code(), 'company_id' => $c['id'], 'snapshot' => employee_snapshot($e, $c), 'breakdown' => $lines, 'gross' => $calc['gross'], 'total_deductions' => $calc['total_deductions'], 'net' => $calc['net'], 'issued_at' => $issuedAt];
         $hash = payslip_hash($row, $run['period']);
+        record_loan_payments($s, $adj, $run['period']);
         db_update('payslips', [
             'code' => $row['code'], 'status' => 'issued', 'snapshot' => json_encode($row['snapshot'], JSON_UNESCAPED_UNICODE), 'breakdown' => json_encode($lines, JSON_UNESCAPED_UNICODE),
             'gross' => $calc['gross'], 'total_deductions' => $calc['total_deductions'], 'net' => $calc['net'], 'hash' => $hash, 'issued_at' => $issuedAt,
         ], 'id = ?', [$s['id']]);
     }
-    db_update('payroll_runs', ['status' => 'finalized', 'finalized_at' => $issuedAt], 'id = ?', [$run['id']]);
+    $u = current_user();
+    db_update('payroll_runs', ['status' => 'finalized', 'finalized_at' => $issuedAt, 'approved_by' => $u['id'] ?? null], 'id = ?', [$run['id']]);
     $pdo->commit();
     return count($slips);
 }
