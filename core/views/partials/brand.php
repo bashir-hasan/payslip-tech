@@ -1,0 +1,1 @@
+<a class="brand" href="<?= e(url('/')) ?>"><span class="brand-mark"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l5 5v13H7z"/><path d="m10 14 2 2 4-4"/></svg></span><span>PaySlip<span class="tld">.tech</span></span></a>

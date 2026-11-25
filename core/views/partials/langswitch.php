@@ -1,0 +1,1 @@
+<span class="lang-switch"><a href="<?= e(url('/lang/en')) ?>" class="<?= lang() === 'en' ? 'on' : '' ?>">EN</a><a href="<?= e(url('/lang/bn')) ?>" class="<?= lang() === 'bn' ? 'on' : '' ?>">বাং</a></span>

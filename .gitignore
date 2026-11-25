@@ -1,0 +1,15 @@
+# Secrets and server-specific settings: never commit
+config.php
+.env
+
+# User uploads (logos, blog covers, import temp files)
+uploads/logos/*
+!uploads/logos/.gitkeep
+uploads/blog/*
+!uploads/blog/index.html
+uploads/tmp/
+
+# Logs and OS files
+*.log
+.DS_Store
+Thumbs.db
