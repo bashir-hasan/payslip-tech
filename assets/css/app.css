@@ -808,3 +808,12 @@ label a:not(.btn), .check a { text-decoration: underline; text-underline-offset:
 .post-toc a { display: inline-block; padding: 3px 0; min-height: 24px; }
 .faq summary, details > summary { min-height: 24px; }
 .footer nav a, .footer .linkbtn { display: inline-flex; align-items: center; min-height: 24px; }
+
+/* Home: feature grid */
+.feat-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.feat { background: var(--card); border: 1px solid var(--line); border-radius: var(--r-lg); padding: 22px; }
+.feat .ic-wrap { width: 40px; height: 40px; border-radius: 12px; background: var(--brand-50); color: var(--brand); display: grid; place-items: center; margin-bottom: 12px; }
+.feat h3 { font-size: 17px; margin: 0 0 6px; }
+.feat p { margin: 0; color: var(--ink-2); font-size: 14.5px; line-height: 1.55; }
+@media (max-width: 960px) { .feat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 600px) { .feat-grid { grid-template-columns: 1fr; } }

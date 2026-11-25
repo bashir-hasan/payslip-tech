@@ -80,3 +80,46 @@ function seed_demo(): void
     set_setting('demo_email', $email);
     set_setting('demo_enabled', '1');
 }
+
+/**
+ * Adds examples of the v1.5–v1.6 features to the demo company so visitors who
+ * open the demo see documents, leave, loans and salary history straight away.
+ * Safe to run more than once: it only fills what is missing.
+ */
+function enrich_demo(): void
+{
+    $cid = demo_cid();
+    $c = $cid > 0 ? db_one('SELECT * FROM companies WHERE id = ?', [$cid]) : null;
+    if (!$c) return;
+    $emps = db_all("SELECT * FROM employees WHERE company_id = ? AND status = 'active' ORDER BY emp_code", [$cid]);
+    if (count($emps) < 4) return;
+    $owner = (int)db_val("SELECT id FROM users WHERE company_id = ? AND role = 'employer' ORDER BY id LIMIT 1", [$cid]);
+    $types = [];
+    foreach (leave_types($c) as $t) $types[$t['name']] = (int)$t['id'];
+    if (!db_val('SELECT 1 FROM leave_requests WHERE company_id = ?', [$cid])) {
+        $next = date('Y-m-d', strtotime('monday next week'));
+        $ins = function (array $e, string $type, string $from, string $to, string $reason, string $status) use ($c, $owner, $types) {
+            if (!isset($types[$type])) return;
+            db_insert('leave_requests', ['company_id' => $c['id'], 'employee_id' => $e['id'], 'type_id' => $types[$type], 'start_date' => $from, 'end_date' => $to, 'days' => leave_working_days($c, $from, $to), 'reason' => $reason, 'status' => $status, 'requested_by' => $owner, 'decided_by' => $status === 'pending' ? null : $owner, 'decided_at' => $status === 'pending' ? null : now(), 'created_at' => now()]);
+        };
+        $ins($emps[1], 'Annual leave', $next, date('Y-m-d', strtotime($next . ' +2 days')), 'Family trip to Cox\'s Bazar', 'pending');
+        $ins($emps[3], 'Sick leave', date('Y-m-d', strtotime('-10 days')), date('Y-m-d', strtotime('-9 days')), 'Fever', 'approved');
+        $ins($emps[2], 'Casual leave', date('Y-m-d', strtotime($next . ' +7 days')), date('Y-m-d', strtotime($next . ' +7 days')), 'Personal work', 'pending');
+    }
+    if (!db_val('SELECT 1 FROM loans WHERE company_id = ?', [$cid])) {
+        db_insert('loans', ['company_id' => $cid, 'employee_id' => $emps[2]['id'], 'title' => 'Eid advance', 'principal' => 15000, 'installment' => 5000, 'start_period' => date('Y-m'), 'status' => 'active', 'created_by' => $owner, 'created_at' => now()]);
+        sync_employee_drafts($c, (int)$emps[2]['id']);
+    }
+    if (!db_val('SELECT 1 FROM salary_changes WHERE company_id = ?', [$cid])) {
+        $e = $emps[0];
+        $new = salary_of($e);
+        $old = array_map(fn($v) => round($v / 1.1, 2), $new);
+        db_insert('salary_changes', ['company_id' => $cid, 'employee_id' => $e['id'], 'effective_period' => date('Y-m', strtotime('first day of -2 months')), 'old_salary' => json_encode($old), 'new_salary' => json_encode($new), 'reason' => 'Annual increment', 'status' => 'applied', 'created_by' => $owner, 'created_at' => now(), 'applied_at' => now()]);
+    }
+    if (!db_val("SELECT 1 FROM documents WHERE company_id = ? AND status = 'issued'", [$cid])) {
+        document_issue($c, (int)$emps[0]['id'], 'salary_certificate', ['addressed_to' => 'The Visa Officer, Embassy of Italy, Dhaka', 'purpose' => 'Tourist visa application'], $owner);
+        document_issue($c, (int)$emps[1]['id'], 'employment_letter', ['addressed_to' => 'City Bank PLC', 'purpose' => 'Home loan application'], $owner);
+        document_issue($c, (int)$emps[3]['id'], 'income_statement', ['year' => (int)date('Y')], $owner);
+        db_insert('documents', ['company_id' => $cid, 'employee_id' => $emps[4]['id'], 'type' => 'employment_letter', 'status' => 'requested', 'addressed_to' => 'Canadian High Commission', 'purpose' => 'Visitor visa', 'requested_by' => $owner, 'created_at' => now()]);
+    }
+}

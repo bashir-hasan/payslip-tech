@@ -5,7 +5,7 @@ declare(strict_types=1);
  * Lightweight automatic database migrations.
  * Runs once per version bump; safe to run repeatedly (every step checks before altering).
  */
-const DB_VERSION = 8;
+const DB_VERSION = 9;
 
 function column_exists(string $table, string $column): bool
 {
@@ -272,6 +272,16 @@ function run_migrations(): void
             KEY idx_sc_emp (employee_id, effective_period),
             KEY idx_sc_pending (company_id, status)
         )$T");
+    }
+    if ($current < 9) {
+        // v1.8.1: show the new plan features on the pricing table (names, prices and limits you set are kept)
+        $saved = json_decode((string)setting('plans', ''), true);
+        if (is_array($saved) && $saved) {
+            foreach (default_plans() as $k => $d) if (isset($saved[$k])) { $saved[$k]['features'] = $d['features']; $saved[$k]['team'] = $saved[$k]['team'] ?? $d['team']; }
+            db_exec("REPLACE INTO settings (k, v) VALUES ('plans', ?)", [json_encode($saved, JSON_UNESCAPED_UNICODE)]);
+        }
+        require_once APP . '/seed.php';
+        try { enrich_demo(); } catch (Throwable $e) { error_log('enrich_demo: ' . $e->getMessage()); }
     }
     db_exec("REPLACE INTO settings (k, v) VALUES ('db_version', ?)", [(string)DB_VERSION]);
 }

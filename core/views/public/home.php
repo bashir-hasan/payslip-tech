@@ -96,6 +96,28 @@ $heroAmt = fn($v) => currency_symbol($heroCur) . money_fmt(round($v * ($heroCur 
   </div>
 </section>
 
+<section class="section" id="features" style="padding-top:0">
+  <div class="container">
+    <div class="section-head">
+      <span class="kicker"><?= e(t('More than payslips')) ?></span>
+      <h2><?= e(t('Everything a small office needs to pay people and prove it')) ?></h2>
+      <p><?= e(t('Payroll, HR paperwork and proof of income in one place, all verifiable by QR code.')) ?></p>
+    </div>
+    <div class="feat-grid">
+      <?php foreach ([
+        ['award', t('Verified letters and certificates'), t('Employment letters, salary certificates, increment letters, income and tax statements. Each has its own QR code, so embassies and banks can check it in seconds.')],
+        ['send', t('Proof-of-income links'), t('Employees send one link with several months of payslips, checked live. They choose to show amounts, only "earns at least X", or nothing, and can switch the link off.')],
+        ['shield', t('Employer trust check'), t('Every check shows whether the employer owns its domain, was reviewed by us, and how long it has run payroll. Fake companies stand out.')],
+        ['users', t('Team roles and approval'), t('HR prepares payroll, the accountant approves it. Each person has their own sign-in, and every action is logged.')],
+        ['calendar', t('Leave, advances and festival bonus'), t('Leave requests and balances, salary advances repaid in instalments, and Eid bonus for everyone in one click.')],
+        ['bank', t('Pay and report in minutes'), t('Bank and bKash/Nagad payment files, payslips sent on WhatsApp, Excel reports, and reminders before the legal pay deadline.')],
+      ] as [$ic, $h, $p]): ?>
+        <div class="feat"><div class="ic-wrap"><?= icon($ic, 20) ?></div><h3><?= e($h) ?></h3><p><?= e($p) ?></p></div>
+      <?php endforeach; ?>
+    </div>
+  </div>
+</section>
+
 <section class="section" style="padding-top:0">
   <div class="container">
     <div class="audience">
