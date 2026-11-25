@@ -35,7 +35,7 @@ function send_security_headers(bool $allowThirdPartyScripts = false): void
         "frame-src $frame",
         "object-src 'none'",
         "base-uri 'self'",
-        "form-action 'self'",
+        "form-action 'self' https://polar.sh https://*.polar.sh", // Polar checkout and customer portal open after a form post
         "frame-ancestors 'self'",
     ]) . (is_https() ? '; upgrade-insecure-requests' : '');
     header('Content-Security-Policy: ' . $csp);
