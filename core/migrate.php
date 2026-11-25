@@ -5,7 +5,7 @@ declare(strict_types=1);
  * Lightweight automatic database migrations.
  * Runs once per version bump; safe to run repeatedly (every step checks before altering).
  */
-const DB_VERSION = 7;
+const DB_VERSION = 8;
 
 function column_exists(string $table, string $column): bool
 {
@@ -250,6 +250,28 @@ function run_migrations(): void
         foreach ($kb as [$q, $a, $k, $l]) {
             if (!db_val('SELECT 1 FROM kb_entries WHERE question = ?', [$q])) db_insert('kb_entries', ['question' => $q, 'answer' => $a, 'keywords' => $k, 'lang' => 'en', 'link' => $l, 'hits' => 0, 'active' => 1, 'created_at' => now()]);
         }
+    }
+    if ($current < 8) {
+        // v1.6: increments, company seal & signature, reminders
+        $T = ' ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci';
+        if (!column_exists('companies', 'signature_img')) db()->exec("ALTER TABLE companies ADD signature_img VARCHAR(120) NULL, ADD stamp_img VARCHAR(120) NULL");
+        db()->exec("CREATE TABLE IF NOT EXISTS salary_changes (
+            id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+            company_id INT UNSIGNED NOT NULL,
+            employee_id INT UNSIGNED NOT NULL,
+            effective_period CHAR(7) NOT NULL,
+            old_salary TEXT NOT NULL,
+            new_salary TEXT NOT NULL,
+            new_designation VARCHAR(190) NULL,
+            reason VARCHAR(255) NULL,
+            status VARCHAR(12) NOT NULL DEFAULT 'applied',
+            document_id INT UNSIGNED NULL,
+            created_by INT UNSIGNED NULL,
+            created_at DATETIME NOT NULL,
+            applied_at DATETIME NULL,
+            KEY idx_sc_emp (employee_id, effective_period),
+            KEY idx_sc_pending (company_id, status)
+        )$T");
     }
     db_exec("REPLACE INTO settings (k, v) VALUES ('db_version', ?)", [(string)DB_VERSION]);
 }

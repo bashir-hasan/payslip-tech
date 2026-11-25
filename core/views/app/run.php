@@ -1,4 +1,5 @@
-<?php $draft = $run['status'] === 'draft'; $canFin = can_do('finalize'); $canEdit = can_do('edit_payroll'); $submitter = $run['submitted_by'] ? db_val('SELECT name FROM users WHERE id = ?', [$run['submitted_by']]) : null; $approver = $run['approved_by'] ? db_val('SELECT name FROM users WHERE id = ?', [$run['approved_by']]) : null; ?>
+<?php $co = db_one('SELECT * FROM companies WHERE id = ?', [$run['company_id']]); $checks = $run['status'] === 'draft' && plan_allows($co, 'checks') ? run_checks($co, $run) : []; $canWa = plan_allows($co, 'whatsapp'); $payLang = $co['payslip_lang'] ?? 'en';
+$draft = $run['status'] === 'draft'; $canFin = can_do('finalize'); $canEdit = can_do('edit_payroll'); $submitter = $run['submitted_by'] ? db_val('SELECT name FROM users WHERE id = ?', [$run['submitted_by']]) : null; $approver = $run['approved_by'] ? db_val('SELECT name FROM users WHERE id = ?', [$run['approved_by']]) : null; ?>
 <div class="page-head">
   <div>
     <a class="small" href="<?= e(url('/app/payroll')) ?>">← <?= e(t('Payroll')) ?></a>
@@ -32,6 +33,29 @@
 <?php endif; ?>
 <?php if (!$draft && $approver): ?>
   <div class="alert alert-info"><?= icon('check') ?><div><?= e(sprintf(t('Approved and issued by %s.'), $approver)) ?><?= $submitter ? ' ' . e(sprintf(t('Prepared by %s.'), $submitter)) : '' ?></div></div>
+<?php endif; ?>
+<?php if ($draft && $canEdit): ?>
+  <div class="row" style="gap:8px;margin-bottom:12px;flex-wrap:wrap">
+    <button type="button" class="btn btn-light btn-sm" data-dialog="festival"><?= icon('zap', 15) ?> <?= e(t('Festival bonus')) ?><?= plan_pill($co, 'festival_bonus') ?></button>
+    <button type="button" class="btn btn-light btn-sm" data-dialog="paste"><?= icon('upload', 15) ?> <?= e(t('Paste from Excel')) ?><?= plan_pill($co, 'paste') ?></button>
+  </div>
+<?php endif; ?>
+<?php if (!$draft): ?>
+  <div class="row" style="gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center">
+    <span class="small muted"><?= e(t('Payment files:')) ?></span>
+    <a class="btn btn-light btn-sm" href="<?= e(url('/app/payroll/' . $run['id'] . '/payfile/bank')) ?>"><?= icon('bank', 15) ?> <?= e(t('Bank transfers')) ?><?= plan_pill($co, 'payment_file') ?></a>
+    <a class="btn btn-light btn-sm" href="<?= e(url('/app/payroll/' . $run['id'] . '/payfile/mfs')) ?>"><?= icon('wallet', 15) ?> <?= e(t('bKash / Nagad / Rocket')) ?><?= plan_pill($co, 'payment_file') ?></a>
+    <a class="btn btn-light btn-sm" href="<?= e(url('/app/payroll/' . $run['id'] . '/payfile/cash')) ?>"><?= icon('file', 15) ?> <?= e(t('Cash sheet')) ?><?= plan_pill($co, 'payment_file') ?></a>
+  </div>
+<?php endif; ?>
+<?php if ($draft && $checks): $warn = count(array_filter($checks, fn($x) => $x['level'] === 'warn')); ?>
+  <div class="alert <?= $warn ? 'alert-warn' : 'alert-info' ?>"><?= icon('alert') ?><div><b><?= e($warn ? sprintf(t('%s things to check before issuing'), num(count($checks))) : sprintf(t('%s notes before issuing'), num(count($checks)))) ?></b>
+    <ul style="margin:6px 0 0;padding-left:18px"><?php foreach ($checks as $ck): ?><li class="small"><?= $ck['slip'] ? '<a href="#slip-' . e((string)$ck['slip']) . '" style="color:inherit">' . e($ck['text']) . '</a>' : e($ck['text']) ?></li><?php endforeach; ?></ul>
+  </div></div>
+<?php elseif ($draft && !plan_allows($co, 'checks')): ?>
+  <p class="small muted" style="margin:0 0 10px"><?= icon('shield', 14) ?> <?= e(t('Automatic checks before issuing (big pay changes, missing bank details, leavers) come with the Starter plan.')) ?></p>
+<?php elseif ($draft): ?>
+  <div class="alert alert-success"><?= icon('check') ?><div><?= e(t('No problems found. Pay changes, bank details and joiners look fine.')) ?></div></div>
 <?php endif; ?>
 <?php if ($draft): ?>
   <div class="alert alert-warn"><?= icon('alert') ?><div><?= e(t('This is a draft. Adjust bonus, overtime, advances or unpaid days below, then finalise to issue verified payslips.')) ?></div></div>
@@ -73,6 +97,10 @@
             <button type="button" class="btn btn-light btn-sm" data-dialog="adjust" data-action="<?= e(url('/app/payroll/' . $run['id'] . '/slip/' . $s['id'])) ?>" data-fill='<?= e(json_encode(['name' => $s['name'], 'bonus' => $a['bonus'] ?: '', 'overtime' => $a['overtime'] ?: '', 'loan' => $a['loan'] ?: '', 'other' => $a['other'] ?: '', 'unpaid_days' => $a['unpaid_days'] ?: '', 'note' => $a['note'] ?? ''])) ?>'><?= icon('edit', 15) ?> <?= e(t('Adjust')) ?></button>
             <a class="btn btn-ghost btn-sm btn-icon" href="<?= e(url('/payslip/draft-' . $s['id'])) ?>" title="<?= e(t('Preview')) ?>" target="_blank"><?= icon('eye', 16) ?></a>
           <?php else: ?>
+            <?php $wa = wa_number($s['phone'], $co['country'] ?? 'BD'); if ($s['status'] === 'issued' && $wa): ?>
+              <?php if ($canWa): ?><a class="btn btn-ghost btn-sm" href="<?= e(wa_link($wa, wa_payslip_text($co, $s['name'], $run['period'], $s['code'], $payLang))) ?>" target="_blank" rel="noopener" title="<?= e(t('Send on WhatsApp')) ?>"><?= icon('send', 15) ?> WhatsApp</a>
+              <?php else: ?><a class="btn btn-ghost btn-sm" href="<?= e(url(billing_enabled() ? '/app/billing' : '/app')) ?>" title="<?= e(t('Send on WhatsApp')) ?>"><?= icon('lock', 14) ?> WhatsApp</a><?php endif; ?>
+            <?php endif; ?>
             <a class="btn btn-light btn-sm" href="<?= e(url('/payslip/' . $s['code'])) ?>"><?= icon('file', 15) ?> <?= e(t('View')) ?></a>
           <?php endif; ?>
           </div>
@@ -103,6 +131,37 @@
       </div>
     </div>
     <div class="dialog-foot"><button type="button" class="btn btn-ghost" data-close><?= e(t('Cancel')) ?></button><button class="btn btn-primary"><?= e(t('Save')) ?></button></div>
+  </form>
+</dialog>
+<?php endif; ?>
+
+<?php if ($draft && $canEdit): ?>
+<dialog id="festival">
+  <form method="post" action="<?= e(url('/app/payroll/' . $run['id'] . '/bonus')) ?>">
+    <?= csrf_field() ?>
+    <div class="dialog-head"><h3><?= e(t('Festival bonus for everyone')) ?></h3><button type="button" class="btn btn-ghost btn-icon" data-close><?= icon('x') ?></button></div>
+    <div class="dialog-body">
+      <div class="field"><label class="label"><?= e(t('Name on the payslip')) ?></label><input class="input" name="label" value="<?= e(t('Eid bonus')) ?>" maxlength="60"></div>
+      <div class="form-grid">
+        <div class="field"><label class="label"><?= e(t('How much')) ?></label><select class="input" name="mode"><option value="percent"><?= e(t('% of basic salary')) ?></option><option value="fixed"><?= e(t('Same amount for everyone')) ?></option></select></div>
+        <div class="field"><label class="label"><?= e(t('Value')) ?></label><input class="input" name="value" inputmode="decimal" placeholder="100" required></div>
+      </div>
+      <div class="field"><label class="label"><?= e(t('Only staff with at least … months of service')) ?></label><input class="input" name="min_months" value="0" inputmode="numeric"><span class="hint"><?= e(t('In Bangladesh, festival bonus is usually for workers with 12 months of service. Use 0 for everyone.')) ?></span></div>
+      <p class="small muted"><?= e(t('Running this again replaces the earlier festival bonus. Bonuses you typed by hand are kept.')) ?></p>
+    </div>
+    <div class="dialog-foot"><button type="button" class="btn btn-ghost" data-close><?= e(t('Cancel')) ?></button><button class="btn btn-primary"><?= icon('zap') ?> <?= e(t('Add bonus')) ?></button></div>
+  </form>
+</dialog>
+<dialog id="paste">
+  <form method="post" action="<?= e(url('/app/payroll/' . $run['id'] . '/paste')) ?>">
+    <?= csrf_field() ?>
+    <div class="dialog-head"><h3><?= e(t('Paste from Excel')) ?></h3><button type="button" class="btn btn-ghost btn-icon" data-close><?= icon('x') ?></button></div>
+    <div class="dialog-body">
+      <p class="small muted"><?= e(t('Copy the rows from your sheet, including the header row, and paste them here. Columns we understand: Employee ID or Name, Overtime, Bonus, Advance, Other deduction, Unpaid days, Note.')) ?></p>
+      <textarea class="input mono" name="data" rows="9" required placeholder="Employee ID&#9;Overtime&#9;Bonus&#9;Unpaid days&#10;EMP-001&#9;2500&#9;0&#9;1&#10;EMP-002&#9;0&#9;5000&#9;0" style="font-size:12.5px"></textarea>
+      <p class="small muted"><?= e(t('Values replace what is in the payroll for the columns you paste. Other columns stay as they are.')) ?></p>
+    </div>
+    <div class="dialog-foot"><button type="button" class="btn btn-ghost" data-close><?= e(t('Cancel')) ?></button><button class="btn btn-primary"><?= icon('upload') ?> <?= e(t('Apply to payroll')) ?></button></div>
   </form>
 </dialog>
 <?php endif; ?>

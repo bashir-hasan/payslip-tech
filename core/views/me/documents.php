@@ -10,6 +10,13 @@
       <button class="btn btn-primary btn-sm"><?= e(t('Create now')) ?></button>
     <?php else: ?><p class="small"><?= e(t('Available after your first payslip.')) ?></p><?php endif; ?>
   </div></form>
+ <?php $cc = db_one('SELECT * FROM companies WHERE id = ?', [$e['company_id']]); if (plan_allows($cc, 'tax_certificate') && $years): $ty0 = (int)date('Y') - ((($cc['country'] ?? 'BD') === 'BD' && (int)date('n') < 7) ? 1 : 0); ?>
+  <form class="card" method="post" action="<?= e(url('/me/documents/tax')) ?>"><div class="card-body"><?= csrf_field() ?>
+    <b><?= icon('zap', 16) ?> <?= e(t('Tax deduction certificate')) ?></b><p class="small muted"><?= e(t('For your income tax return. Ready instantly from your issued payslips.')) ?></p>
+    <div class="field"><select class="input" name="year"><?php for ($y = $ty0; $y >= $ty0 - 3; $y--): ?><option value="<?= $y ?>"><?= e(tax_year($cc, $y)[2]) ?></option><?php endfor; ?></select></div>
+    <button class="btn btn-primary btn-sm"><?= e(t('Create now')) ?></button>
+  </div></form>
+  <?php endif; ?>
   <?php foreach (['employment_letter' => t('Confirms your job, position and joining date. No salary shown.'), 'salary_certificate' => t('Shows your current monthly salary breakdown. Often asked for visas and loans.')] as $type => $desc): ?>
   <form class="card" method="post" action="<?= e(url('/me/documents')) ?>"><div class="card-body"><?= csrf_field() ?><input type="hidden" name="type" value="<?= e($type) ?>">
     <b><?= icon('award', 16) ?> <?= e(doc_types()[$type]) ?></b><p class="small muted"><?= e($desc) ?></p>

@@ -24,6 +24,7 @@ function emp_document_issue(): void
     } else {
         $eid = (int)input('employee_id');
         $type = (string)input('type');
+        if (!isset(base_doc_types()[$type])) redirect('/app/documents');
         $opts = ['addressed_to' => input('addressed_to'), 'purpose' => input('purpose'), 'year' => input('year')];
     }
     $res = document_issue($c, $eid, $type, $opts, (int)current_user()['id'], $reqId);

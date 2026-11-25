@@ -1,11 +1,11 @@
-# PaySlip.tech: installation and operations guide (v1.5.0)
+# PaySlip.tech: installation and operations guide (v1.6.0)
 
 Payroll + tamper-proof, QR-verifiable payslips. 20 currencies, local payslip terms (US, Canada, UK, EU,
 South Asia, Gulf, AU/NZ), English & Bangla, light/dark mode, Polar.sh subscriptions.
 Plain PHP 8.1+ and MySQL/MariaDB. No Composer, no build step.
 
 ---------------------------------------------------------------------------------------------------
-## A. Upgrading your live site from v1.0.x – v1.4.x (no reinstall, no data loss)
+## A. Upgrading your live site from v1.0.x – v1.5.x (no reinstall, no data loss)
 
 1. **Back up first:** cPanel → Backup (or phpMyAdmin → Export) for the database, and download `config.php`.
 2. Upload `payslip-tech-v1.4.0.zip` to the site folder and **Extract**, choosing to overwrite files.
@@ -172,6 +172,30 @@ Upload the new files over the old ones (keep `config.php` and `uploads/`). The d
 - **Loans and advances.** Add an advance once with a monthly instalment. It is deducted from each payroll until repaid and closes itself.
 
 If you edited the plan descriptions in Admin → Billing & plans, add the team lines to your text there (the defaults only apply to sites that never saved plans).
+
+## K. New in v1.6.0: paid-plan tools and light theme by default
+
+Upload over the old files (keep `config.php` and `uploads/`). The database updates itself (DB version 8). The site now opens in light mode; visitors can switch to dark with the moon button and the choice is remembered.
+
+**Starter plan**
+- **One-click festival bonus** on a draft payroll: a % of basic or a fixed amount, with an optional minimum length of service. Running it again replaces the earlier festival bonus.
+- **Paste from Excel**: paste rows with a header (Employee ID or Name, Overtime, Bonus, Advance, Other, Unpaid days, Note) into a draft payroll.
+- **Checks before issuing**: big pay changes against last month, missing bank or wallet numbers, joiners after month end, many unpaid days, leavers, pending leave.
+- **Payment files** (.xlsx) for bank transfers, bKash / Nagad / Rocket and a cash sheet with a signature column.
+- **Send payslips on WhatsApp**: one tap per employee opens WhatsApp with the payslip link (no API, no cost).
+- **Reports**: monthly cost chart, salary register, department totals and yearly totals, each downloadable as Excel.
+- **Reminders** by email: three days before month end if payroll is not issued, and before the Bangladesh Labour Act deadline (wages by the 7th working day). Sent by `cron.php`.
+
+**Business plan**
+- **Increments and promotions** with an effective month (future ones apply automatically when that month's payroll is created), salary history and a verified increment letter.
+- **Company seal and signature** images on new payslips and letters (Settings → Company seal & signature).
+- **Tax deduction certificates** for the income year (July–June in Bangladesh), issued for everyone at once from Documents, or by employees themselves.
+- **Final settlement statements** for leavers: unpaid salary, leave encashment, notice pay, gratuity, outstanding loans; issues a verified statement, closes loans and can deactivate the employee.
+
+**All plans**
+- **Installable phone app (PWA)**: `sw.js`, `offline.html` and `assets/site.webmanifest`. Employees see an Install app button. Pages with personal data are never stored on the device.
+
+Locked features show a small plan badge and send people to Plan & billing. When billing is off (self-hosted) everything is unlocked.
 
 ## Third-party code
 - qrcode-generator by Kazuhiko Arase — MIT licence (`assets/js/qrcode.js`).

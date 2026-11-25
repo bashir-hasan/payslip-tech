@@ -12,12 +12,21 @@ function doc_types(): array
         'employment_letter' => t('Employment letter'),
         'salary_certificate' => t('Salary certificate'),
         'income_statement' => t('Annual income statement'),
+        'increment_letter' => t('Increment letter'),
+        'tax_certificate' => t('Tax deduction certificate'),
+        'final_settlement' => t('Final settlement statement'),
     ];
+}
+
+/** Documents an employer can issue straight from the Documents page. */
+function base_doc_types(): array
+{
+    return array_slice(doc_types(), 0, 3, true);
 }
 
 function doc_type_label(string $type, ?string $lang = null): string
 {
-    $en = ['employment_letter' => 'Employment Letter', 'salary_certificate' => 'Salary Certificate', 'income_statement' => 'Income Statement'][$type] ?? 'Document';
+    $en = ['employment_letter' => 'Employment Letter', 'salary_certificate' => 'Salary Certificate', 'income_statement' => 'Income Statement', 'increment_letter' => 'Increment Letter', 'tax_certificate' => 'Tax Deduction Certificate', 'final_settlement' => 'Final Settlement Statement'][$type] ?? 'Document';
     return $lang === 'bn' ? tp($en, 'bn') : $en;
 }
 
@@ -60,6 +69,19 @@ function document_snapshot(string $type, array $e, array $c, array $opts): array
         $snap['months'] = $months;
         $snap['totals'] = ['gross' => round(array_sum(array_column($months, 'gross')), 2), 'deductions' => round(array_sum(array_column($months, 'deductions')), 2), 'net' => round(array_sum(array_column($months, 'net')), 2), 'tax' => round($tax, 2)];
     }
+    if ($type === 'tax_certificate') {
+        [$from, $to, $label] = tax_year($c, (int)$opts['year']);
+        $rows = db_all("SELECT p.code, p.gross, p.breakdown, r.period FROM payslips p JOIN payroll_runs r ON r.id = p.run_id WHERE p.employee_id = ? AND p.status = 'issued' AND r.period BETWEEN ? AND ? ORDER BY r.period", [$e['id'], $from, $to]);
+        $months = [];
+        foreach ($rows as $r) {
+            $b = json_decode((string)$r['breakdown'], true) ?: [];
+            $months[] = ['period' => $r['period'], 'code' => $r['code'], 'gross' => (float)$r['gross'], 'tax' => (float)($b['deductions']['tax'] ?? 0), 'pf' => (float)($b['deductions']['pf'] ?? 0)];
+        }
+        $snap['tax_year'] = ['from' => $from, 'to' => $to, 'label' => $label];
+        $snap['months'] = $months;
+        $snap['totals'] = ['gross' => round(array_sum(array_column($months, 'gross')), 2), 'tax' => round(array_sum(array_column($months, 'tax')), 2), 'pf' => round(array_sum(array_column($months, 'pf')), 2)];
+    }
+    if (in_array($type, ['increment_letter', 'final_settlement'], true)) $snap['data'] = $opts['data'] ?? [];
     return $snap;
 }
 
@@ -72,6 +94,14 @@ function document_issue(array $c, int $employeeId, string $type, array $opts, ?i
     $c = db_one('SELECT * FROM companies WHERE id = ?', [$c['id']]);
     $opts['addressed_to'] = mb_substr(trim((string)($opts['addressed_to'] ?? '')), 0, 200);
     $opts['purpose'] = mb_substr(trim((string)($opts['purpose'] ?? '')), 0, 200);
+    if (in_array($type, ['increment_letter', 'final_settlement'], true) && empty($opts['data'])) return t('Choose a document type.');
+    if ($type === 'tax_certificate') {
+        $opts['year'] = (int)($opts['year'] ?? date('Y'));
+        [$from, $to] = tax_year($c, $opts['year']);
+        if (!db_val("SELECT 1 FROM payslips p JOIN payroll_runs r ON r.id = p.run_id WHERE p.employee_id = ? AND p.status = 'issued' AND r.period BETWEEN ? AND ?", [$e['id'], $from, $to])) {
+            return t('There are no issued payslips for that tax year yet.');
+        }
+    }
     if ($type === 'income_statement') {
         $opts['year'] = (int)($opts['year'] ?? date('Y'));
         if ($opts['year'] < 2000 || $opts['year'] > (int)date('Y')) return t('Choose a valid year.');
@@ -81,7 +111,7 @@ function document_issue(array $c, int $employeeId, string $type, array $opts, ?i
     }
     $row = [
         'company_id' => $c['id'], 'employee_id' => $e['id'], 'type' => $type, 'code' => new_document_code(), 'status' => 'issued',
-        'addressed_to' => $opts['addressed_to'] ?: null, 'purpose' => $opts['purpose'] ?: null, 'year' => $type === 'income_statement' ? $opts['year'] : null,
+        'addressed_to' => $opts['addressed_to'] ?: null, 'purpose' => $opts['purpose'] ?: null, 'year' => in_array($type, ['income_statement', 'tax_certificate'], true) ? $opts['year'] : null,
         'snapshot' => json_encode(document_snapshot($type, $e, $c, $opts), JSON_UNESCAPED_UNICODE), 'issued_by' => $userId, 'issued_at' => now(),
     ];
     $row['hash'] = document_hash($row);

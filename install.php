@@ -7,7 +7,7 @@ declare(strict_types=1);
  */
 define('ROOT', __DIR__);
 define('APP', __DIR__ . '/core');
-define('APP_VERSION', '1.5.0');
+define('APP_VERSION', '1.6.0');
 
 $installed = is_file(ROOT . '/config.php');
 $errors = [];

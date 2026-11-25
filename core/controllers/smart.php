@@ -39,6 +39,7 @@ function cron_web(string $token): void
     if (!rate_limit('cron-web', 4, 600)) json_out(['ok' => false, 'error' => 'too soon'], 429);
     header('Content-Type: text/plain; charset=utf-8');
     foreach (run_automation() as $line) echo $line, "\n";
+    foreach (run_reminders() as $line) echo $line, "\n";
     echo 'Done at ', date('c'), "\n";
     exit;
 }

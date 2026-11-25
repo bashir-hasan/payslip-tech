@@ -1,5 +1,7 @@
+<div class="alert alert-info" data-install-help hidden style="margin-bottom:14px"><?= icon('download') ?><div><?= e(t('Add PaySlip.tech to your home screen: on iPhone tap Share, then "Add to Home Screen". On Android, open the browser menu and tap "Install app".')) ?></div></div>
 <div class="page-head">
   <div><h1><?= e(t('My payslips')) ?></h1><p><?= e(sprintf(t('%s · %s'), $e['designation'] ?: $e['emp_code'], $e['company_name'])) ?></p></div>
+  <button type="button" class="btn btn-light" data-install hidden><?= icon('download') ?> <?= e(t('Install app')) ?></button>
 </div>
 <?php $last = $slips[0] ?? null; ?>
 <div class="grid grid-3" style="margin-bottom:18px">

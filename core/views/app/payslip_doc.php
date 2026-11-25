@@ -109,10 +109,7 @@ $self = url('/payslip/' . ($code ?: 'draft-' . $p['id']));
       <div class="doc-qr" style="border:2px dashed #e5b4b4;display:grid;place-items:center;color:#b91c1c;font-size:11px;text-align:center;padding:8px"><?= e(tp('QR appears after finalising', $L)) ?></div>
       <div class="doc-verify"><b><?= e(tp('Draft — not valid', $L)) ?></b><p><?= e(tp('This preview cannot be verified until payroll is finalised.', $L)) ?></p></div>
     <?php endif; ?>
-    <div class="doc-sign">
-      <div class="line"><?= e($co['signatory_name'] ?: tp('Authorised Signatory', $L)) ?></div>
-      <span><?= e($co['signatory_title'] ?: tp('Authorised Signatory', $L)) ?></span>
-    </div>
+    <?php partial('docsign', ['co' => $co, 'L' => $L]); ?>
   </footer>
   <p class="doc-legal"><?= e(tp('This is a digitally issued payslip and does not require a physical signature. Its authenticity can be confirmed by scanning the QR code.', $L)) ?><?= !empty($p['branding']) ? ' · Verified by PaySlip.tech' : '' ?></p>
 </article>

@@ -69,3 +69,22 @@
     <div class="row" style="gap:8px"><code class="mono" style="padding:8px 10px;background:var(--soft,#f4f6f8);border-radius:8px;word-break:break-all"><?= e(domain_token($c, $dom)) ?></code><button class="btn btn-light btn-sm" data-copy="<?= e(domain_token($c, $dom)) ?>" data-copied="✓"><?= icon('copy', 15) ?></button></div>
   <?php endif; ?>
 </div></div>
+
+<?php $sealOk = plan_allows($c, 'stamp'); ?>
+<div class="card" id="seal" style="margin-top:18px"><div class="card-body">
+  <div class="fieldset-title"><?= icon('award', 16) ?> <?= e(t('Company seal & signature')) ?><?= plan_pill($c, 'stamp') ?></div>
+  <p class="small muted"><?= e(t('Shown on new payslips and letters next to the signatory name, like a stamped paper document. Use a PNG with a transparent background for the best look.')) ?></p>
+  <form method="post" action="<?= e(url('/app/settings/seal')) ?>" enctype="multipart/form-data">
+    <?= csrf_field() ?>
+    <div class="form-grid">
+      <?php foreach (['signature' => ['signature_img', t('Signature')], 'stamp' => ['stamp_img', t('Seal / stamp')]] as $field => [$col, $lbl]): ?>
+        <div class="field"><label class="label"><?= e($lbl) ?></label>
+          <?php if (!empty($c[$col])): ?><div class="row" style="gap:10px;margin-bottom:6px"><img src="<?= e(url('uploads/logos/' . basename($c[$col]))) ?>" alt="" style="max-height:60px;max-width:160px;background:#fff;border:1px solid var(--line);border-radius:8px;padding:4px"><label class="small"><input type="checkbox" name="remove_<?= e($field) ?>" value="1"> <?= e(t('Remove')) ?></label></div><?php endif; ?>
+          <input class="input" type="file" name="<?= e($field) ?>" accept="image/png,image/jpeg,image/webp" <?= $sealOk ? '' : 'disabled' ?>>
+        </div>
+      <?php endforeach; ?>
+    </div>
+    <button class="btn btn-light" <?= $sealOk ? '' : 'disabled' ?>><?= icon('upload') ?> <?= e(t('Save seal & signature')) ?></button>
+    <?php if (!$sealOk && billing_enabled()): ?> <a class="small" href="<?= e(url('/app/billing')) ?>"><?= e(t('See plans')) ?> →</a><?php endif; ?>
+  </form>
+</div></div>

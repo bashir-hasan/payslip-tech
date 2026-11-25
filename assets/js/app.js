@@ -206,4 +206,27 @@
     if (!navigator.share) { b.classList.add('hide'); return; }
     b.addEventListener('click', function () { navigator.share({ title: document.title, url: b.getAttribute('data-share') }).catch(function () {}); });
   });
+
+  // Installable app (PWA): register the service worker and offer an Install button where the page has one
+  (function () {
+    var sw = document.querySelector('meta[name=sw]');
+    if (sw && 'serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
+      window.addEventListener('load', function () { navigator.serviceWorker.register(sw.getAttribute('content')).catch(function () {}); });
+    }
+    var deferred = null;
+    var btns = $$('[data-install]');
+    var standalone = window.matchMedia && window.matchMedia('(display-mode: standalone)').matches;
+    if (standalone) return;
+    window.addEventListener('beforeinstallprompt', function (e) {
+      e.preventDefault(); deferred = e;
+      btns.forEach(function (b) { b.hidden = false; });
+    });
+    btns.forEach(function (b) {
+      b.addEventListener('click', function () {
+        if (!deferred) { var h = document.querySelector('[data-install-help]'); if (h) h.hidden = false; return; }
+        deferred.prompt(); deferred.userChoice.finally(function () { deferred = null; btns.forEach(function (x) { x.hidden = true; }); });
+      });
+    });
+    if (/iphone|ipad|ipod/i.test(navigator.userAgent)) { var h = document.querySelector('[data-install-help]'); if (h) h.hidden = false; }
+  })();
 })();

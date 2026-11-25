@@ -33,6 +33,7 @@ send_security_headers($appCode);
         <?= $link('/app/payroll', 'payroll', 'wallet', t('Payroll')) ?>
         <?= $link('/app/payslips', 'payslips', 'file', t('Payslips')) ?>
         <?= $link('/app/verifications', 'verifications', 'shield', t('Verification log')) ?>
+        <?= $link('/app/reports', 'reports', 'chart', t('Reports')) ?>
         <div class="nav-label"><?= e(t('People')) ?></div>
         <?php $lp = (int)db_val("SELECT COUNT(*) FROM leave_requests WHERE company_id = ? AND status = 'pending'", [$co['id']]); $dr = (int)db_val("SELECT COUNT(*) FROM documents WHERE company_id = ? AND status = 'requested'", [$co['id']]); ?>
         <?= $link('/app/leave', 'leave', 'calendar', t('Leave & attendance'), $lp ?: null) ?>

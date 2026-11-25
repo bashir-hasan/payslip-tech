@@ -4,6 +4,14 @@
   <?php if ($emps): ?><button class="btn btn-primary" data-dialog="issuedoc"><?= icon('plus') ?> <?= e(t('Issue document')) ?></button><?php endif; ?>
 </div>
 
+<?php $cc = db_one('SELECT * FROM companies WHERE id = ?', [current_user()['company_id']]); $ty0 = (int)date('Y') - ((($cc['country'] ?? 'BD') === 'BD' && (int)date('n') < 7) || (($cc['country'] ?? '') === 'IN' && (int)date('n') < 4) ? 1 : 0); ?>
+<form class="card" method="post" action="<?= e(url('/app/documents/tax')) ?>" style="margin-bottom:18px"><div class="card-body row" style="gap:10px;flex-wrap:wrap;align-items:center">
+  <?= csrf_field() ?>
+  <div style="flex:1;min-width:240px"><b><?= icon('file', 16) ?> <?= e(t('Tax deduction certificates')) ?><?= plan_pill($cc, 'tax_certificate') ?></b><div class="small muted"><?= e(t('One verified certificate per employee, listing the tax deducted from each payslip in the income year. Employees need it for their tax return.')) ?></div></div>
+  <select class="input" name="year" style="width:auto"><?php for ($y = $ty0; $y >= $ty0 - 3; $y--): ?><option value="<?= $y ?>"><?= e(tax_year($cc, $y)[2]) ?></option><?php endfor; ?></select>
+  <button class="btn btn-light" data-confirm="<?= e(t('Issue tax certificates for everyone paid in this income year?')) ?>"><?= e(t('Issue for all employees')) ?></button>
+</div></form>
+
 <?php if ($req): ?>
 <div class="card" style="margin-bottom:18px">
   <div class="card-body" style="padding-bottom:0"><div class="fieldset-title"><?= e(sprintf(t('Requests from employees (%s)'), num(count($req)))) ?></div></div>
@@ -58,7 +66,7 @@
     <div class="dialog-head"><h3><?= e(t('Issue document')) ?></h3><button type="button" class="btn btn-ghost btn-icon" data-close><?= icon('x') ?></button></div>
     <div class="dialog-body">
       <div class="field"><label class="label"><?= e(t('Employee')) ?></label><select class="input" name="employee_id" required><option value=""><?= e(t('Choose…')) ?></option><?php foreach ($emps as $e): ?><option value="<?= e((string)$e['id']) ?>"><?= e($e['name'] . ' (' . $e['emp_code'] . ')') ?></option><?php endforeach; ?></select></div>
-      <div class="field"><label class="label"><?= e(t('Document')) ?></label><select class="input" name="type"><?php foreach (doc_types() as $k => $lbl): ?><option value="<?= e($k) ?>"><?= e($lbl) ?></option><?php endforeach; ?></select><span class="hint"><?= e(t('Salary certificates show the current monthly salary. Income statements list every issued payslip for the year.')) ?></span></div>
+      <div class="field"><label class="label"><?= e(t('Document')) ?></label><select class="input" name="type"><?php foreach (base_doc_types() as $k => $lbl): ?><option value="<?= e($k) ?>"><?= e($lbl) ?></option><?php endforeach; ?></select><span class="hint"><?= e(t('Salary certificates show the current monthly salary. Income statements list every issued payslip for the year.')) ?></span></div>
       <div class="field"><label class="label"><?= e(t('Year (income statement only)')) ?></label><input class="input" name="year" value="<?= e(date('Y')) ?>" inputmode="numeric"></div>
       <div class="field"><label class="label"><?= e(t('Addressed to')) ?></label><input class="input" name="addressed_to" maxlength="200" placeholder="<?= e(t('e.g. The Visa Officer, Embassy of Italy, Dhaka')) ?>"></div>
       <div class="field"><label class="label"><?= e(t('Purpose')) ?></label><input class="input" name="purpose" maxlength="200" placeholder="<?= e(t('e.g. Tourist visa application, home loan')) ?>"></div>

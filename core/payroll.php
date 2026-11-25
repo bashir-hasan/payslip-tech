@@ -90,6 +90,8 @@ function employee_snapshot(array $emp, array $company): array
             'logo' => $company['logo'],
             'signatory_name' => $company['signatory_name'],
             'signatory_title' => $company['signatory_title'],
+            'signature_img' => $company['signature_img'] ?? null,
+            'stamp_img' => $company['stamp_img'] ?? null,
             'country' => $company['country'] ?? 'BD',
             'currency' => $company['currency'] ?? 'BDT',
             'labels' => company_labels($company),
@@ -220,6 +222,7 @@ function payroll_create_run(array $c, string $period, int $workingDays = 30, ?st
     if (!preg_match('/^\d{4}-(0[1-9]|1[0-2])$/', $period)) return t('Choose a valid month.');
     if ($workingDays < 1 || $workingDays > 31) $workingDays = 30;
     if (db_val('SELECT 1 FROM payroll_runs WHERE company_id = ? AND period = ?', [$c['id'], $period])) return t('A payroll run already exists for this month.');
+    apply_due_increments($c, $period);
     $emps = db_all("SELECT * FROM employees WHERE company_id = ? AND status = 'active' ORDER BY name", [$c['id']]);
     if (!$emps) return t('Add at least one active employee before running payroll.');
     $payDate = $payDate && preg_match('/^\d{4}-\d{2}-\d{2}$/', $payDate) ? $payDate : date('Y-m-t', strtotime($period . '-01'));

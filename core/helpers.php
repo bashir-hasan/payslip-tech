@@ -518,6 +518,7 @@ function icon(string $name, int $size = 18): string
 /** Visitor's colour theme: light, dark, or auto (follows the device). */
 function theme(): string
 {
-    $t = $_COOKIE['pst_theme'] ?? 'auto';
-    return in_array($t, ['light', 'dark'], true) ? $t : 'auto';
+    // Light by default; dark only when the visitor picks it with the toggle
+    $t = $_COOKIE['pst_theme'] ?? 'light';
+    return $t === 'dark' ? 'dark' : 'light';
 }

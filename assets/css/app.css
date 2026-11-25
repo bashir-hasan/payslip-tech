@@ -448,6 +448,11 @@ pre.code { background: var(--panel); border: 1px solid var(--panel-line); color:
 .doc-sign { text-align: center; min-width: 170px; }
 .doc-sign .line { border-top: 1px solid #111; margin-top: 46px; padding-top: 6px; font-weight: 700; }
 .doc-sign span { font-size: 11px; color: #555; }
+.doc-sign { position: relative; }
+.doc-sign.has-img .line { margin-top: 8px; }
+.doc-sign .doc-sig { display: block; max-height: 52px; max-width: 170px; margin: 0 auto; object-fit: contain; position: relative; z-index: 2; }
+.doc-sign .doc-seal { position: absolute; right: -14px; top: -34px; width: 88px; height: 88px; object-fit: contain; opacity: .85; z-index: 1; }
+.doc-sign.has-img:not(:has(.doc-sig)) .line { margin-top: 46px; }
 .doc-legal { margin-top: 16px; font-size: 10.5px; color: #667; text-align: center; }
 .sheet[lang="bn"] { font-family: "Hind Siliguri", var(--font); }
 

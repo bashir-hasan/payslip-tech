@@ -30,9 +30,19 @@ $name = $d ? (doc_types()[$d['type']] ?? t('Document')) : t('Document');
           <div><dt><?= e(t('Monthly gross salary')) ?></dt><dd><?= e(money($snap['salary']['gross'])) ?></dd></div>
           <div><dt><?= e(t('Monthly net pay')) ?></dt><dd><?= e(money($snap['salary']['net'])) ?></dd></div>
         <?php endif; ?>
-        <?php if (!empty($snap['totals'])): ?>
+        <?php if (!empty($snap['totals']) && $d['type'] === 'income_statement'): ?>
           <div><dt><?= e(sprintf(t('Net pay for %s'), num($snap['year']))) ?></dt><dd><?= e(money($snap['totals']['net'])) ?> (<?= e(sprintf(t('%s months'), num(count($snap['months'])))) ?>)</dd></div>
           <div><dt><?= e(t('Gross for the year')) ?></dt><dd><?= e(money($snap['totals']['gross'])) ?></dd></div>
+        <?php endif; ?>
+        <?php $dt = $snap['data'] ?? []; if ($d['type'] === 'increment_letter' && $dt): ?>
+          <div><dt><?= e(t('New monthly gross')) ?></dt><dd><?= e(money($dt['new_gross'] ?? 0)) ?> (<?= e(sprintf(t('from %s'), period_label($dt['effective'] ?? ''))) ?>)</dd></div>
+          <div><dt><?= e(t('Previous monthly gross')) ?></dt><dd><?= e(money($dt['old_gross'] ?? 0)) ?></dd></div>
+        <?php elseif ($d['type'] === 'final_settlement' && $dt): ?>
+          <div><dt><?= e(t('Last working day')) ?></dt><dd><?= e(date_fmt($dt['last_day'] ?? null)) ?></dd></div>
+          <div><dt><?= e(t('Net payable')) ?></dt><dd><?= e(money($dt['net'] ?? 0)) ?></dd></div>
+        <?php elseif ($d['type'] === 'tax_certificate' && !empty($snap['tax_year'])): ?>
+          <div><dt><?= e(t('Income year')) ?></dt><dd><?= e($snap['tax_year']['label']) ?></dd></div>
+          <div><dt><?= e(t('Tax deducted')) ?></dt><dd><?= e(money($snap['totals']['tax'])) ?></dd></div>
         <?php endif; ?>
         <div><dt><?= e(t('Verification code')) ?></dt><dd class="mono"><?= e($d['code']) ?></dd></div>
         <div><dt><?= e(t('Digital fingerprint')) ?></dt><dd class="mono"><?= e(fingerprint_display($d['hash'])) ?></dd></div>

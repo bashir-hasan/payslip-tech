@@ -41,6 +41,11 @@ Every payslip issued on PaySlip.tech carries a unique code, a QR code and an HMA
 - **Team roles and payroll approval**: HR prepares payroll, the accountant or owner approves and issues it, each with their own sign-in
 - **Leave and attendance**: leave balances, requests from the employee portal and a monthly attendance sheet; approved unpaid leave flows into payroll
 - **Loans and salary advances**: add once with a monthly instalment, deducted automatically until repaid
+- **Festival bonus in one click, paste from Excel, checks before issuing**: the monthly payroll chores small offices actually do
+- **Bank and bKash / Nagad payment files** and **WhatsApp payslip sending**, so salaries reach people without retyping
+- **Increments, tax deduction certificates and final settlement statements**, each issued as a verified document
+- **Reports and Excel exports**: monthly cost, salary register, department and yearly totals
+- **Installable phone app** for employees, with light and dark themes
 - **Auto payroll**: drafts prepared before pay day, payslips issued and emailed on pay day
 - **Smart assistant**: plain-language commands in English or Bangla (`Rahim bonus 5000, Sadia 2 unpaid days`), always previewed before anything changes; runs on the server with no external AI API
 - **Smart import**: any Excel or CSV staff or salary sheet, columns matched automatically

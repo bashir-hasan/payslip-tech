@@ -35,7 +35,7 @@ function role_allows(string $role, string $method, string $path): bool
     $rules = [
         'hr' => [
             '#^/app/employees(/|$)#', '#^/app/leave(/|$)#', '#^/app/loans(/|$)#', '#^/app/documents(/|$)#', '#^/app/assistant(/|$)#',
-            '#^/app/payroll/create$#', '#^/app/payroll/\d+/slip/\d+$#', '#^/app/payroll/\d+/(submit|delete)$#',
+            '#^/app/payroll/create$#', '#^/app/payroll/\d+/slip/\d+$#', '#^/app/payroll/\d+/(submit|delete|bonus|paste)$#',
         ],
         'accountant' => [
             '#^/app/documents(/|$)#', '#^/app/payroll/\d+/(finalize|email|reject)$#', '#^/app/payslips/\d+/revoke$#',

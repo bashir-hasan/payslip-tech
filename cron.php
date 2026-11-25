@@ -15,4 +15,5 @@ $_SERVER['HTTP_HOST'] = $_SERVER['HTTP_HOST'] ?? 'localhost';
 $_SERVER['REQUEST_URI'] = '/cron';
 require __DIR__ . '/core/bootstrap.php';
 foreach (run_automation() as $line) echo $line, PHP_EOL;
+foreach (run_reminders() as $line) echo $line, PHP_EOL;
 echo 'Done at ', date('c'), PHP_EOL;

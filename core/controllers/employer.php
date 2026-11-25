@@ -220,7 +220,7 @@ function emp_run(string $id): void
 {
     $c = my_company();
     $run = load_run((int)$id, $c);
-    $slips = db_all('SELECT p.*, e.name, e.emp_code, e.designation, e.department, e.payment_method, e.email FROM payslips p JOIN employees e ON e.id = p.employee_id WHERE p.run_id = ? ORDER BY e.name', [$run['id']]);
+    $slips = db_all('SELECT p.*, e.name, e.emp_code, e.designation, e.department, e.payment_method, e.email, e.phone FROM payslips p JOIN employees e ON e.id = p.employee_id WHERE p.run_id = ? ORDER BY e.name', [$run['id']]);
     foreach ($slips as &$s) {
         $s['adjustments'] = json_decode((string)$s['adjustments'], true) ?: default_adjustments();
         $s['breakdown'] = json_decode((string)$s['breakdown'], true) ?: [];

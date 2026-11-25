@@ -1,12 +1,21 @@
 {
-  "name": "PaySlip.tech — Verified payslips for Bangladesh",
+  "id": "/",
+  "name": "PaySlip.tech — Verified payslips",
   "short_name": "PaySlip.tech",
-  "start_url": "/",
+  "description": "Your payslips, letters and proof of income in one place. Anyone can verify them by QR code.",
+  "start_url": "/login?source=app",
+  "scope": "/",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#f6f8f7",
   "theme_color": "#0b1f1c",
   "icons": [
-    { "src": "/assets/img/icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "/assets/img/logo-512.png", "sizes": "512x512", "type": "image/png" }
+    { "src": "/assets/img/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/assets/img/logo-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ],
+  "shortcuts": [
+    { "name": "My payslips", "url": "/me", "icons": [{ "src": "/assets/img/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Proof of income", "url": "/me/proof", "icons": [{ "src": "/assets/img/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Verify a payslip", "url": "/verify", "icons": [{ "src": "/assets/img/icon-192.png", "sizes": "192x192" }] }
   ]
 }

@@ -8,10 +8,14 @@ $n = fn($k) => old($k, isset($e[$k]) ? rtrim(rtrim(number_format((float)$e[$k], 
 <div class="page-head">
   <div><a class="small" href="<?= e(url('/app/employees')) ?>">← <?= e(t('Employees')) ?></a><h1 style="margin-top:6px"><?= e($e['id'] ? ($e['name'] ?? t('Edit employee')) : t('Add employee')) ?></h1></div>
   <?php if ($e['id']): ?>
+    <div class="row" style="gap:8px;flex-wrap:wrap">
+    <a class="btn btn-light" href="<?= e(url('/app/employees/' . $e['id'] . '/increment')) ?>"><?= icon('chart') ?> <?= e(t('Increment')) ?><?= plan_pill($c, 'increments') ?></a>
+    <a class="btn btn-light" href="<?= e(url('/app/employees/' . $e['id'] . '/settlement')) ?>"><?= icon('file') ?> <?= e(t('Final settlement')) ?><?= plan_pill($c, 'settlement') ?></a>
     <form method="post" action="<?= e(url('/app/employees/' . $e['id'] . '/status')) ?>" data-confirm="<?= e($e['status'] === 'active' ? t('Deactivate this employee? They will not be included in future payroll runs. Issued payslips stay valid.') : t('Reactivate this employee?')) ?>">
       <?= csrf_field() ?>
       <button class="btn <?= $e['status'] === 'active' ? 'btn-danger' : 'btn-light' ?>"><?= icon($e['status'] === 'active' ? 'ban' : 'check') ?> <?= e($e['status'] === 'active' ? t('Deactivate') : t('Reactivate')) ?></button>
     </form>
+    </div>
   <?php endif; ?>
 </div>
 
