@@ -212,6 +212,13 @@ function render(string $view, array $data = [], ?string $layout = 'public'): voi
     ob_start();
     require APP . '/views/' . $view . '.php';
     $content = ob_get_clean();
+    if ($layout === 'public') {
+        if (page_modified() === null) page_modified((int)filemtime(APP . '/views/' . $view . '.php'));
+        if (wants_markdown() && http_response_code() < 400 && empty($data['noindex'])) {
+            send_markdown_page((string)(($data['page_title'] ?? '') ?: (($data['title'] ?? '') ?: site_name())), (string)($data['markdown'] ?? html_to_markdown($content)), (string)($data['description'] ?? ''));
+        }
+        public_page_headers();
+    }
     if ($layout === null) {
         echo $content;
         return;

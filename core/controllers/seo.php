@@ -74,6 +74,8 @@ function seo_llms(): void
     echo "- [Home]({$o}/): product overview, how it works, pricing, FAQ\n";
     echo "- [Verify a payslip]({$o}/verify): free public verification\n";
     echo "- [Verification API]({$o}/developers): GET {$o}/api/v1/verify/{CODE} returns JSON\n";
+    echo "- [OpenAPI 3.1]({$o}/openapi.json), [API catalog]({$o}/.well-known/api-catalog), [MCP server]({$o}/.well-known/mcp.json) at POST {$o}/mcp, [A2A agent card]({$o}/.well-known/agent-card.json), [agents.json]({$o}/.well-known/agents.json), [AGENTS.md]({$o}/AGENTS.md)\n";
+    echo "- Any public page as Markdown: request it with the header Accept: text/markdown\n";
     echo "- [Blog]({$o}/blog): guides on payslips, payroll and income verification\n";
     echo "- [Create an employer account]({$o}/register)\n";
     echo "- [Privacy Policy]({$o}/privacy)\n- [Terms of Service]({$o}/terms)\n\n";

@@ -42,6 +42,27 @@ curl <?= e($base) ?>PS-7KQM-4XHD?verifier=bank</pre>
   </ul>
   <p><?= e(t('Amounts are only included when the employer allows them to be shown. Bank account numbers are never returned.')) ?></p>
 
+  <h2 id="errors"><?= e(t('Errors')) ?></h2>
+  <p><?= e(t('Errors (unknown address, too many requests) are returned as RFC 9457 problem details with the content type application/problem+json.')) ?></p>
+  <pre class="code">{
+  "type": "<?= e(site_origin()) ?>/developers#error-too-many-requests",
+  "title": "Too many requests",
+  "status": 429,
+  "detail": "The limit is 120 checks per hour per IP address. Try again later."
+}</pre>
+
+  <h2 id="agents"><?= e(t('For AI agents and integrations')) ?></h2>
+  <ul>
+    <li><b>OpenAPI 3.1</b>: <a href="<?= e(site_origin()) ?>/openapi.json">/openapi.json</a> · <?= e(t('API catalog (RFC 9727)')) ?>: <a href="<?= e(site_origin()) ?>/.well-known/api-catalog">/.well-known/api-catalog</a></li>
+    <li><b>MCP</b> (Streamable HTTP): <code>POST <?= e(site_origin()) ?>/mcp</code>, <?= e(t('tool')) ?> <code>verify_document</code> · <?= e(t('server card')) ?>: <a href="<?= e(site_origin()) ?>/.well-known/mcp.json">/.well-known/mcp.json</a></li>
+    <li><b>A2A</b>: <?= e(t('agent card')) ?> <a href="<?= e(site_origin()) ?>/.well-known/agent-card.json">/.well-known/agent-card.json</a>, <code>POST <?= e(site_origin()) ?>/a2a</code> (<code>message/send</code>)</li>
+    <li><b>agents.json</b>: <a href="<?= e(site_origin()) ?>/.well-known/agents.json">/.well-known/agents.json</a> · <b>AGENTS.md</b>: <a href="<?= e(site_origin()) ?>/AGENTS.md">/AGENTS.md</a></li>
+    <li><?= e(t('Every public page is available as Markdown: send the header Accept: text/markdown.')) ?></li>
+    <li><?= e(t('No sign-in or API key is needed for verification, so there are no OAuth scopes.')) ?></li>
+  </ul>
+  <pre class="code">curl -X POST <?= e(site_origin()) ?>/mcp -H 'Content-Type: application/json' \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"verify_document","arguments":{"code":"PS-7KQM-4XHD"}}}'</pre>
+
   <h2><?= e(t('Limits')) ?></h2>
   <p><?= e(t('120 requests per hour per IP address. Contact us for higher limits.')) ?></p>
   <?php if ($se = setting('support_email')): ?><p><a class="btn btn-dark" href="mailto:<?= e($se) ?>?subject=API%20access"><?= icon('mail') ?> <?= e(t('Contact us about API access')) ?></a></p><?php endif; ?>

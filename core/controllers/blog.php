@@ -51,7 +51,9 @@ function public_post(string $slug): void
     $related = db_all('SELECT id, slug, lang, title, excerpt, cover, published_at, body FROM posts WHERE ' . blog_published_sql() . ' AND id <> ? ORDER BY (lang = ?) DESC, (category <=> ?) DESC, published_at DESC LIMIT 3', [$p['id'], $p['lang'], $p['category']]);
     $graph = [jsonld_blogposting($p, $faqs), jsonld_breadcrumb([[site_name(), '/'], [t('Blog'), '/blog'], [$p['title'], '/blog/' . rawurlencode($p['slug'])]])];
     if ($faqs) $graph[] = jsonld_faq($faqs);
+    page_modified((int)strtotime((string)($p['updated_at'] ?: $p['published_at'])));
     render('public/post', [
+        'markdown' => '# ' . $p['title'] . "\n\n" . ($p['excerpt'] ? '> ' . $p['excerpt'] . "\n\n" : '') . preg_replace('/\[\[cta\]\]/', '[Start free on ' . site_name() . '](' . site_origin() . '/register)', (string)$p['body']) . ($faqs ? "\n\n## FAQ\n\n" . implode("\n\n", array_map(fn($f) => '### ' . $f[0] . "\n\n" . $f[1], $faqs)) : ''),
         'title' => $p['title'],
         'page_title' => $p['meta_title'] ?: null,
         'description' => $p['meta_description'] ?: ($p['excerpt'] ?: mb_substr(strip_tags($r['html']), 0, 155)),

@@ -803,3 +803,8 @@ p a:not(.btn):not(.codepill), li a:not(.btn):not(.codepill), .hint a, .alert a:n
 html[data-theme="dark"] .nav-label { color: #8ea29d !important; }
 label a:not(.btn), .check a { text-decoration: underline; text-underline-offset: 2px; }
 .doc-toolbar .lang-switch a.on { color: #0b1f1c; }
+/* WCAG 2.2 target size (2.5.8): small links and toggles get at least 24×24 px */
+.lang-switch a { display: inline-flex; align-items: center; justify-content: center; min-height: 26px; min-width: 32px; }
+.post-toc a { display: inline-block; padding: 3px 0; min-height: 24px; }
+.faq summary, details > summary { min-height: 24px; }
+.footer nav a, .footer .linkbtn { display: inline-flex; align-items: center; min-height: 24px; }

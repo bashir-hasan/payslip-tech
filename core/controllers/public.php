@@ -76,7 +76,8 @@ function public_verify_result(string $code): void
 function api_verify(string $code): void
 {
     if (!rate_limit('api:' . client_ip(), 120, 3600)) {
-        json_out(['ok' => false, 'error' => 'rate_limited', 'message' => 'Too many requests. Try again later.'], 429);
+        header('Retry-After: 3600');
+        problem_out(429, 'Too many requests', 'The limit is 120 checks per hour per IP address. Try again later.', ['ok' => false, 'error' => 'rate_limited']);
     }
     $res = verify_lookup($code);
     log_verification($res, 'api', (string)input('verifier') ?: null);

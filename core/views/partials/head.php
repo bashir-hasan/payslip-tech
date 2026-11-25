@@ -38,6 +38,9 @@ $tw = setting('seo_twitter');
 <meta property="og:type" content="<?= e($og_type ?? ($seoPage === 'home' ? 'website' : 'article')) ?>">
 <meta property="og:title" content="<?= e($pageTitle) ?>">
 <meta property="og:description" content="<?= e($desc) ?>">
+<?php if (function_exists('page_modified') && ($pm = page_modified())): ?><meta property="og:updated_time" content="<?= e(date('c', $pm)) ?>">
+<?php if (($og_type ?? '') === 'article'): ?><meta property="article:modified_time" content="<?= e(date('c', $pm)) ?>">
+<?php endif; endif; ?>
 <meta property="og:url" content="<?= e(!empty($post_lang) ? site_origin() . $path : canonical_url($path)) ?>">
 <meta property="og:image" content="<?= e($og_image ?? og_image_url()) ?>">
 <?php if (empty($og_image)): ?><meta property="og:image:width" content="1200">
@@ -53,6 +56,9 @@ $tw = setting('seo_twitter');
 <link rel="icon" href="<?= e(url('assets/img/favicon.svg')) ?>" type="image/svg+xml">
 <link rel="icon" href="<?= e(url('assets/img/favicon-32.png')) ?>" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="<?= e(url('assets/img/apple-touch-icon.png')) ?>">
+<?php if (($context ?? '') === 'public'): ?><link rel="service-desc" type="application/vnd.oai.openapi+json" href="<?= e(site_origin() . '/openapi.json') ?>">
+<link rel="api-catalog" href="<?= e(site_origin() . '/.well-known/api-catalog') ?>">
+<?php endif; ?>
 <link rel="manifest" href="<?= e(url('assets/site.webmanifest')) ?>">
 <meta name="sw" content="<?= e(url('sw.js')) ?>">
 <meta name="apple-mobile-web-app-capable" content="yes">

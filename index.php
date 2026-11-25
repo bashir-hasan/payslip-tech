@@ -23,7 +23,7 @@ if ($method === 'GET' && isset($_GET['lang']) && in_array($_GET['lang'], ['en', 
 foreach ($routes as [$m, $pattern, $handler]) {
     if ($m !== $method && !($m === 'GET' && $method === 'HEAD')) continue;
     if (preg_match('#^' . $pattern . '$#', $path, $mt)) {
-        if ($method === 'POST' && !str_starts_with($path, '/webhooks/')) csrf_check();
+        if ($method === 'POST' && !str_starts_with($path, '/webhooks/') && !in_array($path, ['/mcp', '/a2a'], true)) csrf_check();
         $args = array_values(array_filter($mt, 'is_int', ARRAY_FILTER_USE_KEY));
         array_shift($args);
         $handler(...$args);
@@ -31,4 +31,9 @@ foreach ($routes as [$m, $pattern, $handler]) {
     }
 }
 
+// Machine endpoints answer with RFC 9457 problem details, never an HTML page
+if (str_starts_with($path, '/api/') || in_array($path, ['/mcp', '/a2a'], true) || str_starts_with($path, '/.well-known/')) {
+    if ($path === '/mcp' && $method === 'GET') { header('Allow: POST, OPTIONS'); problem_out(405, 'Method not allowed', 'This MCP server does not offer an event stream. Send JSON-RPC requests with POST.'); }
+    problem_out(404, 'Not found', 'No API resource at this address. See ' . site_origin() . '/openapi.json');
+}
 abort(404);

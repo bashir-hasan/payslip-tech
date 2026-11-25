@@ -23,7 +23,7 @@ $heroAmt = fn($v) => currency_symbol($heroCur) . money_fmt(round($v * ($heroCur 
       </div>
     </div>
     <div class="mock-wrap" aria-hidden="true">
-      <div class="mock-badge"><span class="dot"><?= icon('check', 16) ?></span><div><b><?= e(t('Genuine payslip')) ?></b><br><span style="color:#9fb5b0;font-size:12px"><?= e(t('Verified just now')) ?></span></div></div>
+      <div class="mock-badge"><span class="dot"><?= icon('check', 16) ?></span><div><b><?= e(t('Genuine payslip')) ?></b><br><span style="color:#9fb5b0;font-size:12px;background:var(--panel)"><?= e(t('Verified just now')) ?></span></div></div>
       <div class="mock">
         <div class="mock-top">
           <div><div class="mock-co"><?= $heroCur === 'BDT' ? 'Nodi Digital Ltd.' : 'Brightline Studio' ?></div><div class="mock-sub"><?= $heroCur === 'BDT' ? 'Dhanmondi, Dhaka' : ($heroCur === 'GBP' ? 'London, UK' : ($heroCur === 'CAD' ? 'Toronto, ON' : ($heroCur === 'EUR' ? 'Berlin, DE' : ($heroCur === 'INR' ? 'Bengaluru, IN' : 'Austin, TX')))) ?></div></div>

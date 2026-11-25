@@ -1,11 +1,11 @@
-# PaySlip.tech: installation and operations guide (v1.7.0)
+# PaySlip.tech: installation and operations guide (v1.8.0)
 
 Payroll + tamper-proof, QR-verifiable payslips. 20 currencies, local payslip terms (US, Canada, UK, EU,
 South Asia, Gulf, AU/NZ), English & Bangla, light/dark mode, Polar.sh subscriptions.
 Plain PHP 8.1+ and MySQL/MariaDB. No Composer, no build step.
 
 ---------------------------------------------------------------------------------------------------
-## A. Upgrading your live site from v1.0.x – v1.6.x (no reinstall, no data loss)
+## A. Upgrading your live site from v1.0.x – v1.7.x (no reinstall, no data loss)
 
 1. **Back up first:** cPanel → Backup (or phpMyAdmin → Export) for the database, and download `config.php`.
 2. Upload `payslip-tech-v1.4.0.zip` to the site folder and **Extract**, choosing to overwrite files.
@@ -218,6 +218,20 @@ Upload over the old files (keep `config.php` and `uploads/`). No database change
 - Checked with axe-core: 0 violations on 37 page views (public, employer, employee, payslip and document pages) in light and dark mode, desktop and mobile.
 
 The policies are a strong starting point, not legal advice. Have them reviewed if you sign up EU customers, and consider appointing an EU representative (GDPR Art. 27) if you actively market to EU businesses.
+
+## M. New in v1.8.0: AI agent readiness
+
+Upload over the old files **including the new `.htaccess`** (it now lets `/.well-known/` addresses other than certificate checks reach the app). No database change.
+
+- **AGENTS.md** at `/AGENTS.md`: how agents should use the site and the verification API.
+- **Markdown for agents**: any public page returns clean Markdown when requested with `Accept: text/markdown` (blog posts return their original Markdown). HTML pages advertise this with a `Link: …; rel="alternate"; type="text/markdown"` header and `Vary: Accept`.
+- **Freshness**: `Last-Modified` headers on public pages and `og:updated_time` / `article:modified_time` tags.
+- **OpenAPI 3.1** at `/openapi.json` (also `/.well-known/openapi.json`) and an **API catalog** (RFC 9727) at `/.well-known/api-catalog`.
+- **Errors as RFC 9457** `application/problem+json` for unknown API addresses and rate limits (the old `ok`/`error` fields are kept for existing integrations).
+- **MCP server** (Streamable HTTP, JSON-RPC) at `POST /mcp` with one read-only tool, `verify_document`; server card at `/.well-known/mcp.json`.
+- **A2A agent** card at `/.well-known/agent-card.json` and `POST /a2a` (`message/send` with the code in the text).
+- **agents.json** at `/.well-known/agents.json` mapping "verify a payslip or document" to the API.
+- Not added on purpose: OAuth discovery (RFC 8414 / OpenID Connect) and scopes (RFC 6749). The verification API is public and needs no sign-in, so there is nothing to authorise; the OpenAPI file states `security: []`.
 
 ## Third-party code
 - qrcode-generator by Kazuhiko Arase — MIT licence (`assets/js/qrcode.js`).

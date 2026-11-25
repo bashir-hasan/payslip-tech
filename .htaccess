@@ -21,8 +21,10 @@ ServerSignature Off
   RewriteCond %{REQUEST_METHOD} ^(TRACE|TRACK|DELETE|PUT|CONNECT|PATCH)$ [NC]
   RewriteRule ^ - [F,L]
 
-  # Allow Let's Encrypt / Cloudflare domain validation
-  RewriteRule ^\.well-known/ - [L]
+  # Allow Let's Encrypt / Cloudflare domain validation (real files only);
+  # other /.well-known/ addresses (API catalog, MCP, A2A, agents.json) are answered by the app
+  RewriteRule ^\.well-known/(acme-challenge|pki-validation)/ - [L]
+  RewriteRule ^\.well-known/ index.php [L,QSA]
 
   # Block hidden files and app internals
   RewriteRule (^|/)\. - [F,L]

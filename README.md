@@ -48,6 +48,7 @@ Every payslip issued on PaySlip.tech carries a unique code, a QR code and an HMA
 - **Installable phone app** for employees, with light and dark themes
 - **GDPR ready**: cookie consent before any analytics, self-hosted fonts, Data Processing Agreement, data export and account deletion, automatic retention clean-up
 - **WCAG 2.2 AA**: skip links, labelled forms, keyboard focus, contrast in light and dark mode; 0 axe-core violations on the main pages
+- **AI agent ready**: AGENTS.md, Markdown pages via `Accept: text/markdown`, OpenAPI 3.1, API catalog, an MCP server and an A2A agent for verifying documents
 - **Auto payroll**: drafts prepared before pay day, payslips issued and emailed on pay day
 - **Smart assistant**: plain-language commands in English or Bangla (`Rahim bonus 5000, Sadia 2 unpaid days`), always previewed before anything changes; runs on the server with no external AI API
 - **Smart import**: any Excel or CSV staff or salary sheet, columns matched automatically

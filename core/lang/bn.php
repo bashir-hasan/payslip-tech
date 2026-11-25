@@ -1413,4 +1413,14 @@ return [
     'Accessibility' => 'অ্যাক্সেসিবিলিটি',
     'Cookie settings' => 'কুকি সেটিংস',
     'To prevent fraud we record each check (time, IP address, browser) and show the employer that their document was checked. IP addresses are removed after 6 months.' => 'প্রতারণা ঠেকাতে আমরা প্রতিটি যাচাই (সময়, আইপি ঠিকানা, ব্রাউজার) রেকর্ড করি এবং নিয়োগকর্তাকে জানাই যে তার ডকুমেন্ট যাচাই হয়েছে। ৬ মাস পর আইপি ঠিকানা মুছে ফেলা হয়।',
+    // v1.8 AI agent readiness
+    'Errors' => 'ত্রুটি',
+    'Errors (unknown address, too many requests) are returned as RFC 9457 problem details with the content type application/problem+json.' => 'ত্রুটি (অজানা ঠিকানা, অতিরিক্ত অনুরোধ) RFC 9457 problem details হিসেবে application/problem+json কনটেন্ট টাইপে ফেরত আসে।',
+    'For AI agents and integrations' => 'এআই এজেন্ট ও ইন্টিগ্রেশনের জন্য',
+    'API catalog (RFC 9727)' => 'API ক্যাটালগ (RFC 9727)',
+    'tool' => 'টুল',
+    'server card' => 'সার্ভার কার্ড',
+    'agent card' => 'এজেন্ট কার্ড',
+    'Every public page is available as Markdown: send the header Accept: text/markdown.' => 'প্রতিটি পাবলিক পেজ Markdown হিসেবেও পাওয়া যায়: Accept: text/markdown হেডার পাঠান।',
+    'No sign-in or API key is needed for verification, so there are no OAuth scopes.' => 'যাচাইয়ের জন্য লগইন বা API কী লাগে না, তাই কোনো OAuth স্কোপ নেই।',
 ];
