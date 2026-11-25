@@ -3,7 +3,7 @@
   <div><h1><?= e(t('Leave & attendance')) ?></h1><p><?= e(t('Employees request leave from their portal. Approved unpaid leave is deducted in that month\'s payroll automatically.')) ?></p></div>
   <?php if ($mng && $emps): ?><button class="btn btn-primary" data-dialog="addleave"><?= icon('plus') ?> <?= e(t('Record leave')) ?></button><?php endif; ?>
 </div>
-<div class="tabs" style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap">
+<div class="row" style="gap:6px;margin-bottom:16px;flex-wrap:wrap">
   <a class="btn btn-sm <?= $tab === 'requests' ? 'btn-dark' : 'btn-light' ?>" href="<?= e(url('/app/leave')) ?>"><?= e(t('Requests')) ?><?= $pending ? ' (' . e(num($pending)) . ')' : '' ?></a>
   <a class="btn btn-sm <?= $tab === 'month' ? 'btn-dark' : 'btn-light' ?>" href="<?= e(url('/app/leave?tab=month')) ?>"><?= e(t('Monthly attendance')) ?></a>
   <?php if ($mng): ?><a class="btn btn-sm <?= $tab === 'settings' ? 'btn-dark' : 'btn-light' ?>" href="<?= e(url('/app/leave?tab=settings')) ?>"><?= e(t('Leave types & weekend')) ?></a><?php endif; ?>

@@ -145,6 +145,21 @@ function public_privacy(): void
     render('public/privacy', ['title' => t('Privacy Policy'), 'seo_page' => 'privacy', 'description' => t('How PaySlip.tech collects, uses and protects employer, employee and verification data.'), 'jsonld' => [jsonld_breadcrumb([[site_name(), '/'], [t('Privacy Policy'), '/privacy']])]]);
 }
 
+function public_cookies(): void
+{
+    render('public/cookies', ['title' => t('Cookie Policy'), 'seo_page' => 'cookies', 'description' => t('The cookies PaySlip.tech uses and how to change your choice.')]);
+}
+
+function public_dpa(): void
+{
+    render('public/dpa', ['title' => t('Data Processing Agreement'), 'seo_page' => 'dpa', 'description' => t('GDPR data processing terms for businesses that use PaySlip.tech.')]);
+}
+
+function public_accessibility(): void
+{
+    render('public/accessibility', ['title' => t('Accessibility Statement'), 'seo_page' => 'accessibility', 'description' => t('How PaySlip.tech meets WCAG 2.2 AA and how to report a problem.')]);
+}
+
 function public_terms(): void
 {
     render('public/terms', ['title' => t('Terms of Service'), 'seo_page' => 'terms', 'description' => t('The terms for using PaySlip.tech to run payroll and issue verifiable payslips.'), 'jsonld' => [jsonld_breadcrumb([[site_name(), '/'], [t('Terms of Service'), '/terms']])]]);

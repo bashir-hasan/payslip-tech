@@ -1,13 +1,14 @@
-<?php send_security_headers(has_custom_scripts()); ?><!doctype html>
+<?php send_security_headers(tracking_allowed()); ?><!doctype html>
 <html lang="<?= e(lang()) ?>" data-theme="<?= e(theme()) ?>">
 <head><?php partial('head', get_defined_vars() + ['context' => 'public']); ?></head>
 <body>
+<a class="skip-link" href="#main"><?= e(t('Skip to main content')) ?></a>
 <?= body_tracking_code() ?>
 <?php if ($ann = setting('announcement')): ?><div class="announce"><?= e($ann) ?></div><?php endif; ?>
 <header class="topbar-public">
   <div class="container">
     <?php partial('brand'); ?>
-    <nav class="nav-public">
+    <nav class="nav-public" id="public-nav" aria-label="<?= e(t('Main')) ?>">
       <a class="nl" href="<?= e(url('/#how')) ?>"><?= e(t('How it works')) ?></a>
       <a class="nl" href="<?= e(url('/#pricing')) ?>"><?= e(t('Pricing')) ?></a>
       <a class="nl" href="<?= e(url('/blog')) ?>"><?= e(t('Blog')) ?></a>
@@ -22,11 +23,11 @@
         <a class="btn btn-dark btn-sm hide-m" href="<?= e(url('/register')) ?>"><?= e(t('Start free')) ?></a>
       <?php endif; ?>
     </nav>
-    <button class="btn btn-ghost btn-icon menu-toggle" data-public-menu aria-label="Menu"><?= icon('menu', 22) ?></button>
+    <button class="btn btn-ghost btn-icon menu-toggle" data-public-menu aria-label="<?= e(t('Menu')) ?>" aria-controls="public-nav" aria-expanded="false"><?= icon('menu', 22) ?></button>
   </div>
 </header>
 <?php partial('flash'); ?>
-<main><?= $content ?></main>
+<main id="main" tabindex="-1"><?= $content ?></main>
 <footer class="footer">
   <div class="container">
     <div><?php partial('brand'); ?><p class="small" style="margin:10px 0 0"><?= e(t('Verified payslips & pay stubs, worldwide.')) ?> © <?= date('Y') ?></p></div>
@@ -36,10 +37,15 @@
       <a href="<?= e(url('/developers')) ?>"><?= e(t('API')) ?></a>
       <a href="<?= e(url('/privacy')) ?>"><?= e(t('Privacy')) ?></a>
       <a href="<?= e(url('/terms')) ?>"><?= e(t('Terms')) ?></a>
+      <a href="<?= e(url('/cookies')) ?>"><?= e(t('Cookies')) ?></a>
+      <a href="<?= e(url('/dpa')) ?>"><?= e(t('DPA')) ?></a>
+      <a href="<?= e(url('/accessibility')) ?>"><?= e(t('Accessibility')) ?></a>
+      <?php if (has_custom_scripts()): ?><button type="button" class="linkbtn" data-consent-open><?= e(t('Cookie settings')) ?></button><?php endif; ?>
       <?php if ($se = setting('support_email')): ?><a href="mailto:<?= e($se) ?>"><?= e(t('Contact')) ?></a><?php endif; ?>
     </nav>
   </div>
 </footer>
+<?php partial('consent'); ?>
 <?php partial('chatwidget'); ?>
 <script src="<?= e(asset('js/qrcode.js')) ?>"></script>
 <script src="<?= e(asset('js/app.js')) ?>"></script>

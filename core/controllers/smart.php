@@ -40,6 +40,7 @@ function cron_web(string $token): void
     header('Content-Type: text/plain; charset=utf-8');
     foreach (run_automation() as $line) echo $line, "\n";
     foreach (run_reminders() as $line) echo $line, "\n";
+    foreach (run_retention() as $line) echo $line, "\n";
     echo 'Done at ', date('c'), "\n";
     exit;
 }

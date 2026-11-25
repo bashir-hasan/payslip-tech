@@ -4,17 +4,18 @@ $nav = $nav ?? '';
 $co = null;
 if ($cu && $cu['company_id']) $co = db_one('SELECT id, name, logo FROM companies WHERE id = ?', [$cu['company_id']]);
 $link = function (string $href, string $key, string $ic, string $label, $count = null) use ($nav) {
-    $on = $nav === $key ? ' class="on"' : '';
+    $on = $nav === $key ? ' class="on" aria-current="page"' : '';
     $c = $count !== null ? '<span class="count">' . e((string)$count) . '</span>' : '';
     return '<a href="' . e(url($href)) . '"' . $on . '>' . icon($ic) . '<span>' . e($label) . '</span>' . $c . '</a>';
 };
 $isDemo = $co && (int)$co['id'] === demo_cid();
-$appCode = setting('code_in_app', '0') === '1' && has_custom_scripts();
+$appCode = setting('code_in_app', '0') === '1' && tracking_allowed();
 send_security_headers($appCode);
 ?><!doctype html>
 <html lang="<?= e(lang()) ?>" data-theme="<?= e(theme()) ?>">
 <head><?php partial('head', get_defined_vars() + ['noindex' => true, 'context' => 'app']); ?></head>
 <body>
+<a class="skip-link" href="#main"><?= e(t('Skip to main content')) ?></a>
 <?php if ($appCode) echo body_tracking_code(); ?>
 <?php partial('flash'); ?>
 <div class="shell">
@@ -26,7 +27,7 @@ send_security_headers($appCode);
         <div><b title="<?= e($co['name']) ?>"><?= e($co['name']) ?></b><span><?= e($cu['role'] === 'employee' ? t('Employee portal') : (company_roles()[company_role($cu)] ?? t('Employer'))) ?></span></div>
       </div>
     <?php endif; ?>
-    <nav class="nav">
+    <nav class="nav" aria-label="<?= e(t('Main')) ?>">
       <?php if ($cu['role'] === 'employer'): ?>
         <?= $link('/app', 'dashboard', 'dashboard', t('Dashboard')) ?>
         <?= $link('/app/employees', 'employees', 'users', t('Employees')) ?>
@@ -88,7 +89,7 @@ send_security_headers($appCode);
     <?php if ($isDemo): ?><div class="announce"><?= e(t('Demo mode: this is a sample company with fictional employees. Changes are visible to other visitors.')) ?> <a href="<?= e(url('/register')) ?>" style="color:var(--lime);font-weight:600"><?= e(t('Create your own account')) ?> →</a></div><?php endif; ?>
     <header class="appbar">
       <div class="row" style="gap:10px;min-width:0">
-        <button class="btn btn-ghost btn-icon menu-toggle" data-nav-toggle aria-label="Menu"><?= icon('menu', 22) ?></button>
+        <button class="btn btn-ghost btn-icon menu-toggle" data-nav-toggle aria-label="<?= e(t('Menu')) ?>" aria-expanded="false"><?= icon('menu', 22) ?></button>
         <div class="crumbs"><b><?= e($title ?? '') ?></b></div>
       </div>
       <div class="row" style="gap:8px">
@@ -96,9 +97,10 @@ send_security_headers($appCode);
         <?php partial('langswitch'); ?>
       </div>
     </header>
-    <div class="content"><?= $content ?></div>
+    <main class="content" id="main" tabindex="-1"><?= $content ?></main>
   </div>
 </div>
+<?php if (setting('code_in_app', '0') === '1') partial('consent'); ?>
 <?php if (setting('chat_in_app', '0') === '1' && $cu['role'] !== 'admin') partial('chatwidget'); ?>
 <script src="<?= e(asset('js/qrcode.js')) ?>"></script>
 <script src="<?= e(asset('js/app.js')) ?>"></script>

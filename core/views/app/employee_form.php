@@ -10,6 +10,9 @@ $n = fn($k) => old($k, isset($e[$k]) ? rtrim(rtrim(number_format((float)$e[$k], 
   <?php if ($e['id']): ?>
     <div class="row" style="gap:8px;flex-wrap:wrap">
     <a class="btn btn-light" href="<?= e(url('/app/employees/' . $e['id'] . '/increment')) ?>"><?= icon('chart') ?> <?= e(t('Increment')) ?><?= plan_pill($c, 'increments') ?></a>
+    <?php if ($e['status'] !== 'active' && !str_starts_with((string)$e['name'], 'Erased employee')): ?>
+      <form method="post" action="<?= e(url('/app/employees/' . $e['id'] . '/erase')) ?>" data-confirm="<?= e(t('Erase this former employee\'s personal details (name, contact, bank details)? Issued payslips stay as payroll records. This cannot be undone.')) ?>"><?= csrf_field() ?><button class="btn btn-ghost"><?= icon('trash') ?> <?= e(t('Erase personal data')) ?></button></form>
+    <?php endif; ?>
     <a class="btn btn-light" href="<?= e(url('/app/employees/' . $e['id'] . '/settlement')) ?>"><?= icon('file') ?> <?= e(t('Final settlement')) ?><?= plan_pill($c, 'settlement') ?></a>
     <form method="post" action="<?= e(url('/app/employees/' . $e['id'] . '/status')) ?>" data-confirm="<?= e($e['status'] === 'active' ? t('Deactivate this employee? They will not be included in future payroll runs. Issued payslips stay valid.') : t('Reactivate this employee?')) ?>">
       <?= csrf_field() ?>

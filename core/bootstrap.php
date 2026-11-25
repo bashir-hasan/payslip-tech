@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 define('ROOT', dirname(__DIR__));
 define('APP', __DIR__);
-define('APP_VERSION', '1.6.0');
+define('APP_VERSION', '1.7.0');
 
 if (!is_file(ROOT . '/config.php')) {
     header('Location: ' . rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/')), '/') . '/install.php');

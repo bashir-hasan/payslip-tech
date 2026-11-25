@@ -7,7 +7,7 @@ declare(strict_types=1);
  * Open Graph + Twitter cards and JSON-LD structured data. Admins can override per page.
  */
 
-const SEO_PAGES = ['home' => '/', 'verify' => '/verify', 'developers' => '/developers', 'privacy' => '/privacy', 'terms' => '/terms', 'register' => '/register', 'login' => '/login', 'blog' => '/blog'];
+const SEO_PAGES = ['home' => '/', 'verify' => '/verify', 'developers' => '/developers', 'privacy' => '/privacy', 'terms' => '/terms', 'cookies' => '/cookies', 'dpa' => '/dpa', 'accessibility' => '/accessibility', 'register' => '/register', 'login' => '/login', 'blog' => '/blog'];
 
 function seo_override(string $page, string $field): ?string
 {
@@ -165,6 +165,19 @@ function tracking_enabled_here(string $context): bool
     return $context === 'app' && setting('code_in_app', '0') === '1';
 }
 
+/** Visitor's cookie choice: 'all', 'essential' or null (not asked yet). */
+function consent_state(): ?string
+{
+    $v = $_COOKIE['pst_consent'] ?? '';
+    return in_array($v, ['all', 'essential'], true) ? $v : null;
+}
+
+/** Analytics, pixels and custom code run only after the visitor accepts them (GDPR / ePrivacy). */
+function tracking_allowed(): bool
+{
+    return has_custom_scripts() && consent_state() === 'all';
+}
+
 function has_custom_scripts(): bool
 {
     return (bool)(setting('ga4_id') || setting('gtm_id') || setting('fb_pixel_id') || setting('clarity_id') || trim((string)setting('code_head')) || trim((string)setting('code_body')) || trim((string)setting('code_footer')));
@@ -176,6 +189,7 @@ function head_tracking_code(): string
     if ($v = setting('google_site_verification')) $out .= '<meta name="google-site-verification" content="' . e($v) . '">' . "\n";
     if ($v = setting('bing_site_verification')) $out .= '<meta name="msvalidate.01" content="' . e($v) . '">' . "\n";
     if ($v = setting('fb_domain_verification')) $out .= '<meta name="facebook-domain-verification" content="' . e($v) . '">' . "\n";
+    if (!tracking_allowed()) return $out; // verification tags only until the visitor accepts cookies
     $gtm = preg_replace('/[^A-Z0-9-]/', '', strtoupper((string)setting('gtm_id')));
     if ($gtm) {
         $out .= "<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','" . $gtm . "');</script>\n";
@@ -199,6 +213,7 @@ function head_tracking_code(): string
 
 function body_tracking_code(): string
 {
+    if (!tracking_allowed()) return '';
     $out = '';
     $gtm = preg_replace('/[^A-Z0-9-]/', '', strtoupper((string)setting('gtm_id')));
     if ($gtm) $out .= '<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=' . $gtm . '" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>' . "\n";
@@ -207,6 +222,7 @@ function body_tracking_code(): string
 
 function footer_tracking_code(): string
 {
+    if (!tracking_allowed()) return '';
     return (string)setting('code_footer', '');
 }
 

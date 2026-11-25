@@ -21,6 +21,7 @@
         <span class="hint"><?= e(t('Helps the employer understand how their payslips are used. We do not ask for your name.')) ?></span>
       </div>
       <button class="btn btn-primary btn-lg btn-block"><?= icon('shield') ?> <?= e(t('Verify payslip')) ?></button>
+      <p class="small muted" style="margin:10px 0 0"><?= e(t('To prevent fraud we record each check (time, IP address, browser) and show the employer that their document was checked. IP addresses are removed after 6 months.')) ?> <a href="<?= e(url('/privacy#data')) ?>"><?= e(t('Privacy Policy')) ?></a></p>
     </form>
   </div>
   <div class="grid grid-3" style="margin-top:20px">

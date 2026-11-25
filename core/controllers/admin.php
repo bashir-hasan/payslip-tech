@@ -99,6 +99,7 @@ function admin_settings_save(): void
     set_setting('site_name', mb_substr((string)input('site_name'), 0, 80) ?: 'PaySlip.tech');
     $se = (string)input('support_email');
     set_setting('support_email', filter_var($se, FILTER_VALIDATE_EMAIL) ? $se : null);
+    set_setting('legal_entity', mb_substr(trim(strip_tags((string)input('legal_entity'))), 0, 200) ?: null);
     $mf = (string)input('mail_from');
     set_setting('mail_from', filter_var($mf, FILTER_VALIDATE_EMAIL) ? $mf : null);
     set_setting('allow_registration', input('allow_registration') ? '1' : '0');

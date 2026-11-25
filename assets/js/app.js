@@ -5,7 +5,7 @@
 
   // Mobile sidebar
   $$('[data-nav-toggle]').forEach(function (b) {
-    b.addEventListener('click', function () { document.body.classList.toggle('nav-open'); });
+    b.addEventListener('click', function () { var open = document.body.classList.toggle('nav-open'); b.setAttribute('aria-expanded', open ? 'true' : 'false'); });
   });
   $$('.backdrop').forEach(function (b) {
     b.addEventListener('click', function () { document.body.classList.remove('nav-open'); });
@@ -13,7 +13,7 @@
 
   // Public mobile menu
   var pm = $('[data-public-menu]');
-  if (pm) pm.addEventListener('click', function () { $('.nav-public').classList.toggle('open'); });
+  if (pm) pm.addEventListener('click', function () { var open = $('.nav-public').classList.toggle('open'); pm.setAttribute('aria-expanded', open ? 'true' : 'false'); });
 
   // Sticky header border
   var tp = $('.topbar-public');
@@ -23,10 +23,42 @@
   }
 
   // Flash auto-hide
+  // Errors stay until dismissed; other messages fade after 8 s unless the pointer or focus is on them (WCAG 2.2.1)
   $$('.flash-stack .alert').forEach(function (a, i) {
-    setTimeout(function () { a.style.transition = 'opacity .4s'; a.style.opacity = '0'; setTimeout(function () { a.remove(); }, 450); }, 6000 + i * 600);
     a.addEventListener('click', function () { a.remove(); });
+    if (a.classList.contains('alert-error')) return;
+    var hold = false;
+    a.addEventListener('mouseenter', function () { hold = true; });
+    a.addEventListener('mouseleave', function () { hold = false; });
+    var fade = function () { if (hold) { setTimeout(fade, 2000); return; } a.style.transition = 'opacity .4s'; a.style.opacity = '0'; setTimeout(function () { a.remove(); }, 450); };
+    setTimeout(fade, 8000 + i * 600);
   });
+
+  // Accessibility helpers: tie each visible label to its field, name icon-only buttons and placeholder-only inputs
+  (function () {
+    var n = 0;
+    $$('.field').forEach(function (f) {
+      var lab = f.querySelector('label.label');
+      var ctl = f.querySelector('input:not([type=hidden]):not([type=checkbox]):not([type=radio]), select, textarea');
+      if (!lab || !ctl || lab.getAttribute('for') || lab.contains(ctl)) return;
+      if (!ctl.id) ctl.id = 'f-' + (++n) + '-' + (ctl.name || 'x').replace(/[^a-z0-9_-]/gi, '');
+      lab.setAttribute('for', ctl.id);
+      var hint = f.querySelector('.hint');
+      if (hint && !ctl.getAttribute('aria-describedby')) { if (!hint.id) hint.id = ctl.id + '-hint'; ctl.setAttribute('aria-describedby', hint.id); }
+    });
+    $$('input:not([type=hidden]), select, textarea').forEach(function (c) {
+      if (c.getAttribute('aria-label') || c.getAttribute('aria-labelledby') || (c.id && document.querySelector('label[for="' + c.id + '"]')) || c.closest('label')) return;
+      var name = c.getAttribute('placeholder') || c.getAttribute('title') || c.name;
+      if (name) c.setAttribute('aria-label', name);
+    });
+    $$('button, a.btn').forEach(function (b) {
+      if (b.getAttribute('aria-label') || (b.textContent || '').trim()) return;
+      var name = b.getAttribute('title') || (b.hasAttribute('data-close') ? (document.documentElement.lang === 'bn' ? 'বন্ধ করুন' : 'Close') : '');
+      if (name) b.setAttribute('aria-label', name);
+    });
+    $$('pre').forEach(function (pr) { if (!pr.hasAttribute('tabindex')) { pr.setAttribute('tabindex', '0'); pr.setAttribute('role', 'region'); pr.setAttribute('aria-label', 'Code example'); } });
+    $$('[data-qr]').forEach(function (q) { q.setAttribute('role', 'img'); if (!q.getAttribute('aria-label')) q.setAttribute('aria-label', 'QR code: ' + q.getAttribute('data-qr')); });
+  })();
 
   // Copy buttons
   $$('[data-copy]').forEach(function (b) {
@@ -228,5 +260,18 @@
       });
     });
     if (/iphone|ipad|ipod/i.test(navigator.userAgent)) { var h = document.querySelector('[data-install-help]'); if (h) h.hidden = false; }
+  })();
+
+  // Cookie consent: analytics load only after "Accept all" (the server adds them on the next page load)
+  (function () {
+    var box = document.querySelector('[data-consent]');
+    var set = function (v) {
+      document.cookie = 'pst_consent=' + v + ';path=/;max-age=31536000;SameSite=Lax' + (location.protocol === 'https:' ? ';Secure' : '');
+      location.reload();
+    };
+    $$('[data-consent-choice]').forEach(function (b) { b.addEventListener('click', function () { set(b.getAttribute('data-consent-choice')); }); });
+    $$('[data-consent-open]').forEach(function (b) {
+      b.addEventListener('click', function () { if (box) { box.hidden = false; var f = box.querySelector('button'); if (f) f.focus(); } });
+    });
   })();
 })();

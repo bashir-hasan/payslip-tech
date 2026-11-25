@@ -12,8 +12,8 @@ declare(strict_types=1);
 function send_security_headers(bool $allowThirdPartyScripts = false): void
 {
     if (headers_sent()) return;
-    $fonts = 'https://fonts.googleapis.com';
-    $fontFiles = 'https://fonts.gstatic.com';
+    $fonts = ''; // fonts are self-hosted (no Google requests)
+    $fontFiles = '';
     if ($allowThirdPartyScripts) {
         $script = "'self' 'unsafe-inline' https:";
         $connect = "'self' https:";

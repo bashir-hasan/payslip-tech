@@ -1,11 +1,11 @@
-# PaySlip.tech: installation and operations guide (v1.6.0)
+# PaySlip.tech: installation and operations guide (v1.7.0)
 
 Payroll + tamper-proof, QR-verifiable payslips. 20 currencies, local payslip terms (US, Canada, UK, EU,
 South Asia, Gulf, AU/NZ), English & Bangla, light/dark mode, Polar.sh subscriptions.
 Plain PHP 8.1+ and MySQL/MariaDB. No Composer, no build step.
 
 ---------------------------------------------------------------------------------------------------
-## A. Upgrading your live site from v1.0.x – v1.5.x (no reinstall, no data loss)
+## A. Upgrading your live site from v1.0.x – v1.6.x (no reinstall, no data loss)
 
 1. **Back up first:** cPanel → Backup (or phpMyAdmin → Export) for the database, and download `config.php`.
 2. Upload `payslip-tech-v1.4.0.zip` to the site folder and **Extract**, choosing to overwrite files.
@@ -197,6 +197,28 @@ Upload over the old files (keep `config.php` and `uploads/`). The database updat
 
 Locked features show a small plan badge and send people to Plan & billing. When billing is off (self-hosted) everything is unlocked.
 
+## L. New in v1.7.0: GDPR and WCAG 2.2 AA
+
+Upload over the old files (keep `config.php` and `uploads/`). No database change.
+
+**GDPR**
+- **No Google Fonts**: fonts are served from `assets/fonts/` (SIL Open Font License), so visitors' IP addresses are not sent to Google.
+- **Cookie consent**: when you add analytics, pixels or custom code in Admin → Code & tracking, a banner appears. Nothing from those tools loads, and the stricter security policy stays on, until a visitor clicks "Accept all". "Cookie settings" in the footer reopens the choice.
+- **New pages**: `/privacy` (rewritten: controller and processor roles, legal bases, sub-processors, transfers, retention, rights), `/cookies`, `/dpa` (Data Processing Agreement with Standard Contractual Clauses by reference) and `/accessibility`. Set the operator's legal name in Admin → Platform settings.
+- **Self-service rights**: My account → *Download my data* (JSON export for every user; owners get all company records) and *Close company account* (owner, password + company name, deletes everything).
+- **Erase a former employee**: on an inactive employee's page, *Erase personal data* removes name, contact and bank details while issued payslips stay as payroll records.
+- **Retention, automatic (cron)**: verification IPs and browser details removed after 6 months, verification logs deleted after 24 months, activity IPs removed after 12 months, old chats deleted after 12 months, expired proof links cleaned up.
+- **Transparency**: the verify page tells verifiers what is recorded and for how long.
+
+**WCAG 2.2 AA**
+- Skip link, landmarks and `aria-current` navigation; menu buttons report open/closed.
+- Every form field is tied to its label (and hint); icon-only buttons, QR codes and code blocks have accessible names.
+- Strong focus outlines, underlined links in text, contrast fixes in light and dark mode, `prefers-reduced-motion` respected.
+- Error messages no longer disappear on their own; other messages pause while hovered.
+- Checked with axe-core: 0 violations on 37 page views (public, employer, employee, payslip and document pages) in light and dark mode, desktop and mobile.
+
+The policies are a strong starting point, not legal advice. Have them reviewed if you sign up EU customers, and consider appointing an EU representative (GDPR Art. 27) if you actively market to EU businesses.
+
 ## Third-party code
 - qrcode-generator by Kazuhiko Arase — MIT licence (`assets/js/qrcode.js`).
-- Fonts: Inter, Plus Jakarta Sans, Hind Siliguri via Google Fonts (SIL Open Font License).
+- Fonts: Inter, Plus Jakarta Sans, Hind Siliguri, self-hosted in `assets/fonts/` (SIL Open Font License, see `assets/fonts/OFL.txt`).

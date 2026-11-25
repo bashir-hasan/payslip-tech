@@ -3,6 +3,7 @@
 
 <div class="alert alert-warn"><?= icon('alert') ?><div><?= e(t('Only paste code from sources you trust. Custom code runs on your public pages and can read what visitors type there. It never runs on payslip documents or the payslip pages of signed-in users.')) ?></div></div>
 
+<div class="alert alert-info"><?= icon('shield') ?><div><?= e(t('GDPR: analytics, pixels and custom code below load only after a visitor clicks "Accept all" in the cookie banner. The banner appears automatically once you add any of them.')) ?></div></div>
 <form method="post" action="<?= e(url('/admin/code')) ?>">
   <?= csrf_field() ?>
   <div class="grid grid-2" style="align-items:start">

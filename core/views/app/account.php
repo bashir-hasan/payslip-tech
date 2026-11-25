@@ -58,6 +58,26 @@
     </tbody></table></div>
     <div class="card-foot small muted"><?= e(t('If you see activity you do not recognise, change your password and turn on two-factor authentication.')) ?></div>
   </div>
+
+  <div class="card" id="data"><div class="card-head"><h3><?= e(t('Your data')) ?></h3></div><div class="card-body">
+    <p class="muted"><?= e(t('Download everything we hold about you in a machine-readable file (JSON). Account owners also get all company, employee and payroll records.')) ?></p>
+    <a class="btn btn-light" href="<?= e(url('/account/export')) ?>"><?= icon('download') ?> <?= e(t('Download my data')) ?></a>
+    <p class="small muted" style="margin-top:10px"><?= e(t('Read how we use your data in the')) ?> <a href="<?= e(url('/privacy')) ?>"><?= e(t('Privacy Policy')) ?></a>.</p>
+  </div></div>
+
+  <?php if ($u['role'] === 'employer' && company_role($u) === 'owner'): ?>
+  <div class="card" id="close" style="border-color:var(--bad)"><div class="card-head"><h3><?= e(t('Close company account')) ?></h3></div><div class="card-body">
+    <p class="muted"><?= e(t('Permanently deletes your company, team, employees, payroll, payslips, documents and logs. Payslips and documents will no longer verify. This cannot be undone. Download your data first.')) ?></p>
+    <form method="post" action="<?= e(url('/account/close')) ?>" data-confirm="<?= e(t('Delete the company account and all its data for ever?')) ?>">
+      <?= csrf_field() ?>
+      <div class="field"><label class="label" for="close-name"><?= e(t('Type your company name to confirm')) ?></label><input class="input" id="close-name" name="confirm_name" autocomplete="off" required></div>
+      <div class="field"><label class="label" for="close-pass"><?= e(t('Your password')) ?></label><input class="input" id="close-pass" type="password" name="password" autocomplete="current-password" required></div>
+      <button class="btn btn-danger"><?= icon('trash') ?> <?= e(t('Close account and delete data')) ?></button>
+    </form>
+  </div></div>
+  <?php elseif ($u['role'] === 'employee'): ?>
+  <div class="card"><div class="card-body small muted"><?= e(t('To correct or delete your payroll records, ask your employer. They control these records and can erase your details after you leave.')) ?></div></div>
+  <?php endif; ?>
 </div>
 </div>
 <style>@media (max-width:960px){[data-acc]{grid-template-columns:1fr!important}}</style>

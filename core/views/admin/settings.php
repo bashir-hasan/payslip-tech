@@ -5,6 +5,7 @@
     <div class="form-grid">
       <div class="field"><label class="label"><?= e(t('Site name')) ?></label><input class="input" name="site_name" value="<?= e(setting('site_name', 'PaySlip.tech')) ?>"></div>
       <div class="field"><label class="label"><?= e(t('Support email')) ?></label><input class="input" type="email" name="support_email" value="<?= e(setting('support_email', '')) ?>"></div>
+      <div class="field"><label class="label"><?= e(t('Legal name and address of the operator')) ?></label><input class="input" name="legal_entity" maxlength="200" value="<?= e(setting('legal_entity', '')) ?>" placeholder="Md Bashir Hasan Saikat, Dhaka, Bangladesh"><span class="hint"><?= e(t('Shown as the data controller in the Privacy Policy and the Data Processing Agreement.')) ?></span></div>
       <div class="field span-2"><label class="label"><?= e(t('Send emails from')) ?></label><input class="input" type="email" name="mail_from" value="<?= e(setting('mail_from', '')) ?>" placeholder="no-reply@payslip.tech"><span class="hint"><?= e(t('Create this mailbox in cPanel so emails are delivered reliably.')) ?></span></div>
       <div class="field span-2"><label class="label"><?= e(t('Announcement bar')) ?></label><input class="input" name="announcement" value="<?= e(setting('announcement', '')) ?>" maxlength="200" placeholder="<?= e(t('Optional message shown on the public site')) ?>"></div>
     </div>
