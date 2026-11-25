@@ -114,13 +114,18 @@ function polar_verify_webhook(string $payload, array $headers, string $secret): 
 /** Applies a subscription object from Polar to the matching company. */
 function apply_polar_subscription(array $sub): ?int
 {
+    // The Polar organization may sell other products and send their events here too.
+    // Only act on subscriptions for this site's own products.
+    $productId = (string)($sub['product_id'] ?? ($sub['product']['id'] ?? ''));
+    $ours = array_filter(array_map(fn($p) => (string)($p['product_id'] ?? ''), plans()));
+    if ($productId === '' || !in_array($productId, $ours, true)) return null;
+
     $meta = $sub['metadata'] ?? [];
     $cid = (int)($meta['company_id'] ?? 0);
-    if (!$cid && !empty($sub['customer']['external_id'])) $cid = (int)preg_replace('/\D/', '', (string)$sub['customer']['external_id']);
+    if (!$cid && preg_match('/^company_(\d+)$/', (string)($sub['customer']['external_id'] ?? ''), $m)) $cid = (int)$m[1];
     if (!$cid && !empty($sub['id'])) $cid = (int)db_val('SELECT id FROM companies WHERE polar_subscription_id = ?', [$sub['id']]);
     if (!$cid || !db_val('SELECT 1 FROM companies WHERE id = ?', [$cid])) return null;
 
-    $productId = (string)($sub['product_id'] ?? ($sub['product']['id'] ?? ''));
     $planKey = 'free';
     foreach (plans() as $k => $p) if ($k !== 'free' && $p['product_id'] !== '' && $p['product_id'] === $productId) $planKey = $k;
     $status = (string)($sub['status'] ?? '');
