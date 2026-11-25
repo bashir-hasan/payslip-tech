@@ -5,7 +5,7 @@ declare(strict_types=1);
  * Lightweight automatic database migrations.
  * Runs once per version bump; safe to run repeatedly (every step checks before altering).
  */
-const DB_VERSION = 5;
+const DB_VERSION = 6;
 
 function column_exists(string $table, string $column): bool
 {
@@ -137,6 +137,10 @@ function run_migrations(): void
             KEY idx_post_pub (status, published_at)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
         if (!(int)db_val('SELECT COUNT(*) FROM posts')) seed_blog_posts();
+    }
+    if ($current < 6) {
+        // Paid plans are live: drop "beta" wording from stored chatbot answers
+        db_exec("UPDATE kb_entries SET answer = REPLACE(answer, 'It is free during the beta.', 'It is free and needs no key.') WHERE answer LIKE '%during the beta%'");
     }
     db_exec("REPLACE INTO settings (k, v) VALUES ('db_version', ?)", [(string)DB_VERSION]);
 }

@@ -904,4 +904,9 @@ return [
     'Focus keyword appears in the first paragraph.' => 'মূল কিওয়ার্ড প্রথম অনুচ্ছেদে আছে।',
     'Focus keyword appears in the meta description.' => 'মূল কিওয়ার্ড মেটা ডেসক্রিপশনে আছে।',
     'Set a focus keyword (the main phrase people search for).' => 'একটি মূল কিওয়ার্ড দিন (মানুষ যে শব্দগুচ্ছ লিখে খোঁজে)।',
+    // v1.4.2 sign-up wording
+    'Free for up to 5 employees. No card needed. Takes less than a minute.' => '৫ জন কর্মী পর্যন্ত ফ্রি। কার্ড লাগবে না। এক মিনিটও লাগবে না।',
+    'Run monthly payroll in minutes, in 20 currencies' => 'কয়েক মিনিটে মাসিক বেতন প্রক্রিয়া, ২০টি মুদ্রায়',
+    'Every payslip gets a QR code and a tamper-proof signature' => 'প্রতিটি স্লিপে QR কোড ও পরিবর্তন-প্রতিরোধী সিগনেচার',
+    'Banks, landlords and embassies verify it free in one scan' => 'ব্যাংক, বাড়িওয়ালা ও দূতাবাস এক স্ক্যানে বিনা খরচে যাচাই করেন',
 ];

@@ -13,6 +13,8 @@
     <li><b>Employee records entered by employers:</b> name, employee ID, designation, department, joining date, contact details, payment method, bank or mobile wallet details, salary structure and monthly payroll figures.</li>
     <li><b>Employee portal accounts:</b> name, email and hashed password.</li>
     <li><b>Verification checks:</b> the code checked, the result, time, IP address, browser user-agent and, if provided, the type of verifier (for example "bank"). We do not ask verifiers for their name.</li>
+    <li><b>Billing:</b> your plan, subscription status and Polar customer ID. Card and payment details are entered on Polar's checkout and never reach our servers.</li>
+    <li><b>Support chat:</b> messages you send in the website chat, and your name and email if you give them.</li>
     <li><b>Technical data:</b> a session cookie needed to keep you signed in and a language preference cookie. We do not use advertising or tracking cookies.</li>
   </ul>
 
@@ -29,7 +31,7 @@
   <p>Anyone with a payslip's code can see: employer name, employee name and ID, designation, pay period, issue date, the verification code and fingerprint, and, only if the employer enables it, gross pay, total deductions and net pay. <b>Bank account and wallet numbers are never shown</b> on verification pages or in the API. Employers can turn off amounts in their settings and can revoke any payslip.</p>
 
   <h2>5. Sharing</h2>
-  <p>We share data only with service providers needed to run the service (our web host and email delivery), and with authorities when the law requires it.</p>
+  <p>We share data only with service providers needed to run the service (our web host, email delivery, Cloudflare for security and performance, and Polar, our merchant of record, for payments), and with authorities when the law requires it.</p>
 
   <h2>6. Security</h2>
   <p>Passwords are stored as one-way hashes. All forms are protected against cross-site request forgery, access is limited by role, each company can only access its own records, and payslips carry a keyed digital fingerprint that detects changes. No system is perfectly secure; please tell us immediately if you suspect a problem.</p>

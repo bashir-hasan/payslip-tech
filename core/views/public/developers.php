@@ -2,7 +2,7 @@
 <div class="page-narrow prose">
   <span class="kicker"><?= e(t('For banks, NBFIs and agencies')) ?></span>
   <h1><?= e(t('Verification API')) ?></h1>
-  <p><?= e(t('Check payslips automatically from your loan, visa or onboarding system. The API is free during the beta and needs no key.')) ?></p>
+  <p><?= e(t('Check payslips automatically from your loan, visa or onboarding system. The API is free and needs no key.')) ?></p>
 
   <h2><?= e(t('Request')) ?></h2>
   <pre class="code">GET <?= e($base) ?>{CODE}
@@ -43,6 +43,6 @@ curl <?= e($base) ?>PS-7KQM-4XHD?verifier=bank</pre>
   <p><?= e(t('Amounts are only included when the employer allows them to be shown. Bank account numbers are never returned.')) ?></p>
 
   <h2><?= e(t('Limits')) ?></h2>
-  <p><?= e(t('120 requests per hour per IP address during the beta. Contact us for higher limits.')) ?></p>
+  <p><?= e(t('120 requests per hour per IP address. Contact us for higher limits.')) ?></p>
   <?php if ($se = setting('support_email')): ?><p><a class="btn btn-dark" href="mailto:<?= e($se) ?>?subject=API%20access"><?= icon('mail') ?> <?= e(t('Contact us about API access')) ?></a></p><?php endif; ?>
 </div>

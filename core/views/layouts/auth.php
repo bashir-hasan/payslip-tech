@@ -10,9 +10,9 @@
     <div style="position:relative;z-index:1">
       <h2><?= e(t('Payslips that prove themselves.')) ?></h2>
       <ul>
-        <li><?= icon('check') ?><span><?= e(t('Run monthly payroll in minutes, in Bangla or English')) ?></span></li>
-        <li><?= icon('check') ?><span><?= e(t('Every payslip gets a QR code and a tamper-proof fingerprint')) ?></span></li>
-        <li><?= icon('check') ?><span><?= e(t('Banks, embassies and landlords verify in one scan')) ?></span></li>
+        <li><?= icon('check') ?><span><?= e(t('Run monthly payroll in minutes, in 20 currencies')) ?></span></li>
+        <li><?= icon('check') ?><span><?= e(t('Every payslip gets a QR code and a tamper-proof signature')) ?></span></li>
+        <li><?= icon('check') ?><span><?= e(t('Banks, landlords and embassies verify it free in one scan')) ?></span></li>
       </ul>
     </div>
     <p class="small" style="color:#7f9792;position:relative;z-index:1">© <?= date('Y') ?> <?= e(site_name()) ?></p>

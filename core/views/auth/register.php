@@ -1,5 +1,5 @@
 <h1><?= e(t('Create your company account')) ?></h1>
-<p class="sub"><?= e(t('Free during beta. Takes less than a minute.')) ?></p>
+<p class="sub"><?= e(t('Free for up to 5 employees. No card needed. Takes less than a minute.')) ?></p>
 <form method="post" action="<?= e(url('/register')) ?>">
   <?= csrf_field() ?>
   <div style="position:absolute;left:-9999px" aria-hidden="true"><label>Website<input name="website" tabindex="-1" autocomplete="off"></label></div>
