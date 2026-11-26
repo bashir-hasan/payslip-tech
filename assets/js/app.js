@@ -214,11 +214,13 @@
     $$('[data-chat-toggle]', cw).forEach(function (b) {
       b.addEventListener('click', function () {
         open = panel.hidden; panel.hidden = !open; dot.hidden = true;
+        cw.classList.toggle('is-open', open); document.body.classList.toggle('cw-open', open);
         if (open) { if (!loaded) { loaded = true; poll(); } setTimeout(function () { var i = $('input', form); if (i) i.focus(); }, 50); }
         schedule();
       });
     });
     form.addEventListener('submit', function (e) { e.preventDefault(); var i = $('input', form); send(i.value); i.value = ''; });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && open) { var c = $('.cw-head [data-chat-toggle]', cw) || $('[data-chat-toggle]', cw); if (c) c.click(); } });
   }
 
 
@@ -272,6 +274,60 @@
     $$('[data-consent-choice]').forEach(function (b) { b.addEventListener('click', function () { set(b.getAttribute('data-consent-choice')); }); });
     $$('[data-consent-open]').forEach(function (b) {
       b.addEventListener('click', function () { if (box) { box.hidden = false; var f = box.querySelector('button'); if (f) f.focus(); } });
+    });
+  })();
+  // v1.9: menu groups remember open/closed; on tall screens everything starts open
+  (function () {
+    var store = function (k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } };
+    var groups = $$('.nav-group');
+    groups.forEach(function (g) {
+      var k = 'pst_nav_' + g.getAttribute('data-group'), saved = store(k);
+      if (!g.hasAttribute('data-current')) {
+        if (saved === '1') g.open = true; else if (saved === '0') g.open = false; else if (window.innerHeight >= 940) g.open = true;
+      }
+      g.addEventListener('toggle', function () { store(k, g.open ? '1' : '0'); });
+    });
+    var cur = $('.nav a.on');
+    if (cur && cur.scrollIntoView) { var sb = $('.sidebar'); if (sb && cur.offsetTop > sb.clientHeight - 120) cur.scrollIntoView({ block: 'center' }); }
+  })();
+
+  // v1.9: when the page's own buttons scroll away, show them in the top bar
+  (function () {
+    var head = $('.content > .page-head'), slot = $('[data-appbar-actions]');
+    if (!head || !slot || !('IntersectionObserver' in window)) return;
+    var row = $('.row', head) || head.lastElementChild;
+    if (!row || row === head.firstElementChild) return;
+    var items = $$('a.btn, button.btn', row).filter(function (b) { return b.offsetParent !== null && !b.disabled; }).slice(-3);
+    if (!items.length) return;
+    items.forEach(function (orig) {
+      var p = document.createElement(orig.tagName === 'A' ? 'a' : 'button');
+      if (orig.tagName === 'A') { p.href = orig.href; if (orig.target) p.target = orig.target; } else { p.type = 'button'; p.addEventListener('click', function () { orig.click(); }); }
+      p.className = orig.className.replace(/\bbtn-block\b/, '') + ' btn-sm';
+      p.tabIndex = -1;
+      var ic = orig.querySelector('svg'); if (ic) p.appendChild(ic.cloneNode(true));
+      var lbl = document.createElement('span'); lbl.className = 'lbl'; lbl.textContent = ' ' + orig.textContent.trim(); p.appendChild(lbl);
+      slot.appendChild(p);
+    });
+    new IntersectionObserver(function (es) {
+      var hidden = !es[0].isIntersecting;
+      slot.classList.toggle('show', hidden);
+      slot.setAttribute('aria-hidden', hidden ? 'false' : 'true');
+      $$('a,button', slot).forEach(function (b) { b.tabIndex = hidden ? 0 : -1; });
+    }, { rootMargin: '-64px 0px 0px 0px' }).observe(row);
+  })();
+
+  // v1.9: back to top
+  (function () {
+    var b = $('[data-to-top]');
+    if (!b) return;
+    if ($('.cw')) document.body.classList.add('has-chat');
+    b.hidden = false;
+    var on = false, tick = function () { var s = window.scrollY > 600; if (s !== on) { on = s; b.classList.toggle('show', s); b.tabIndex = s ? 0 : -1; } };
+    window.addEventListener('scroll', tick, { passive: true }); tick();
+    b.addEventListener('click', function () {
+      var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
+      var m = $('#main'); if (m) m.focus({ preventScroll: true });
     });
   })();
 })();

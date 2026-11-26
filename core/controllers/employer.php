@@ -25,7 +25,31 @@ function emp_dashboard(): void
         ['done' => (bool)$lastRun, 'label' => t('Run your first payroll'), 'url' => '/app/payroll'],
         ['done' => $stats['issued'] > 0, 'label' => t('Issue verified payslips'), 'url' => '/app/payroll'],
     ];
-    render('app/dashboard', ['title' => t('Dashboard'), 'nav' => 'dashboard', 'c' => $c, 'stats' => $stats, 'lastRun' => $lastRun, 'runs' => array_reverse($runs), 'recentVer' => $recentVer, 'checklist' => $checklist], 'app');
+    // Things that need someone's attention this month
+    $period = date('Y-m');
+    $thisRun = db_one('SELECT id, status FROM payroll_runs WHERE company_id = ? AND period = ?', [$cid, $period]);
+    $loanLeft = 0.0; $loanCount = 0;
+    foreach (db_all("SELECT id, principal FROM loans WHERE company_id = ? AND status = 'active'", [$cid]) as $l) {
+        $left = (float)$l['principal'] - loan_paid((int)$l['id']);
+        if ($left > 0) { $loanLeft += $left; $loanCount++; }
+    }
+    $deadline = null;
+    if (($c['country'] ?? 'BD') === 'BD') {
+        $prev = db_one('SELECT id, status FROM payroll_runs WHERE company_id = ? AND period = ?', [$cid, date('Y-m', strtotime('first day of last month'))]);
+        $d = nth_working_day($c, $period, 7);
+        if ($stats['employees'] > 0 && (!$prev || $prev['status'] === 'draft') && $d >= date('Y-m-d')) $deadline = ['date' => $d, 'period' => date('Y-m', strtotime('first day of last month')), 'run' => $prev];
+    }
+    $attention = [
+        'leave' => (int)db_val("SELECT COUNT(*) FROM leave_requests WHERE company_id = ? AND status = 'pending'", [$cid]),
+        'letters' => (int)db_val("SELECT COUNT(*) FROM documents WHERE company_id = ? AND status = 'requested'", [$cid]),
+        'loans' => $loanCount, 'loan_left' => $loanLeft,
+        'run' => $thisRun, 'period' => $period, 'deadline' => $deadline,
+    ];
+    $u = current_user();
+    $showPlans = billing_enabled() && company_role($u) === 'owner';
+    $active = $stats['employees'];
+    render('app/dashboard', ['title' => t('Dashboard'), 'nav' => 'dashboard', 'c' => $c, 'stats' => $stats, 'lastRun' => $lastRun, 'runs' => array_reverse($runs), 'recentVer' => $recentVer, 'checklist' => $checklist,
+        'attention' => $attention, 'showPlans' => $showPlans, 'plan' => company_plan($c), 'plans' => plans(), 'limit' => employee_limit($c), 'active' => $active, 'isDemo' => (int)$c['id'] === demo_cid()], 'app');
 }
 
 /* ---------------- Employees ---------------- */

@@ -17,7 +17,7 @@
       <?php partial('langswitch'); ?>
       <?php partial('themetoggle'); ?>
       <?php if ($cu = current_user()): ?>
-        <a class="btn btn-dark btn-sm" href="<?= e(url(home_for($cu))) ?>"><?= e(t('Open dashboard')) ?></a>
+        <a class="btn btn-dark btn-sm dash-btn" href="<?= e(url(home_for($cu))) ?>" aria-label="<?= e(t('Open dashboard')) ?>"><?= icon('dashboard', 16) ?><span class="lbl"><?= e(t('Open dashboard')) ?></span></a>
       <?php else: ?>
         <a class="nl hide-m" href="<?= e(url('/login')) ?>"><?= e(t('Sign in')) ?></a>
         <a class="btn btn-dark btn-sm hide-m" href="<?= e(url('/register')) ?>"><?= e(t('Start free')) ?></a>
