@@ -2,6 +2,9 @@
 // [method, regex path, handler]
 return [
     // Public
+    // First-party analytics (cookieless)
+    ['POST', '/a/collect', 'analytics_collect'],
+    ['POST', '/a/ping', 'analytics_ping'],
     ['GET', '/', 'public_home'],
     ['GET', '/lang/(en|bn)', 'public_lang'],
     ['GET', '/verify', 'public_verify_form'],
@@ -141,6 +144,9 @@ return [
 
     // Super admin
     ['GET', '/admin', 'admin_dashboard'],
+    ['GET', '/admin/analytics', 'admin_analytics'],
+    ['GET', '/admin/analytics/live', 'admin_analytics_live'],
+    ['POST', '/admin/analytics/settings', 'admin_analytics_settings'],
     ['GET', '/admin/companies', 'admin_companies'],
     ['POST', '/admin/companies/(\d+)/status', 'admin_company_status'],
     ['GET', '/admin/users', 'admin_users'],

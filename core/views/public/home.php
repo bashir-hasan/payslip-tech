@@ -11,9 +11,9 @@ $heroAmt = fn($v) => currency_symbol($heroCur) . money_fmt(round($v * ($heroCur 
       <h1><?= t('Payslips that <em>prove</em> they are real.') ?></h1>
       <p class="lead"><?= e(t('Run payroll, issue tamper-proof payslips and pay stubs with a QR code, and let banks, landlords, embassies and employers confirm they are genuine in one scan. Any currency. Free for small teams.')) ?></p>
       <div class="hero-cta">
-        <a class="btn btn-primary btn-lg" href="<?= e(url('/register')) ?>"><?= e(t('Create free account')) ?> <?= icon('arrow-right') ?></a>
+        <a class="btn btn-primary btn-lg" data-track="cta_signup" data-track-meta="hero" href="<?= e(url('/register')) ?>"><?= e(t('Create free account')) ?> <?= icon('arrow-right') ?></a>
         <?php if ($demo): ?><a class="btn btn-light btn-lg" href="<?= e(url('/demo')) ?>"><?= icon('eye') ?> <?= e(t('Try the live demo')) ?></a><?php endif; ?>
-        <a class="btn btn-ghost btn-lg" href="<?= e(url('/verify')) ?>"><?= icon('qr') ?> <?= e(t('Verify a payslip')) ?></a>
+        <a class="btn btn-ghost btn-lg" data-track="cta_verify" data-track-meta="hero" href="<?= e(url('/verify')) ?>"><?= icon('qr') ?> <?= e(t('Verify a payslip')) ?></a>
       </div>
       <div class="hero-trust">
         <span><?= icon('check', 16) ?> <?= e(t('No credit card')) ?></span>
@@ -171,7 +171,7 @@ $heroAmt = fn($v) => currency_symbol($heroCur) . money_fmt(round($v * ($heroCur 
           <h3><?= e($p['name']) ?></h3>
           <div class="price">$<?= e(rtrim(rtrim(number_format((float)$p['price'], 2), '0'), '.')) ?> <small><?= e(t('/ month')) ?></small></div>
           <ul><?php foreach (array_filter(array_map('trim', explode("\n", $p['features']))) as $f): ?><li><?= icon('check', 16) ?><?= e($f) ?></li><?php endforeach; ?></ul>
-          <a class="btn <?= $p['badge'] ? 'btn-primary' : 'btn-light' ?> btn-block" href="<?= e(url('/register')) ?>"><?= e($k === 'free' ? t('Start free') : sprintf(t('Start with %s'), $p['name'])) ?></a>
+          <a class="btn <?= $p['badge'] ? 'btn-primary' : 'btn-light' ?> btn-block" data-track="pricing_click" data-track-meta="<?= e($k) ?>" href="<?= e(url('/register')) ?>"><?= e($k === 'free' ? t('Start free') : sprintf(t('Start with %s'), $p['name'])) ?></a>
         </div>
       <?php endforeach; ?>
     </div>

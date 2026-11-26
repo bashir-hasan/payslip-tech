@@ -5,7 +5,7 @@ declare(strict_types=1);
  * Lightweight automatic database migrations.
  * Runs once per version bump; safe to run repeatedly (every step checks before altering).
  */
-const DB_VERSION = 9;
+const DB_VERSION = 10;
 
 function column_exists(string $table, string $column): bool
 {
@@ -282,6 +282,54 @@ function run_migrations(): void
         }
         require_once APP . '/seed.php';
         try { enrich_demo(); } catch (Throwable $e) { error_log('enrich_demo: ' . $e->getMessage()); }
+    }
+    if ($current < 10) {
+        // v2.0: first-party, cookieless analytics (no raw IPs stored)
+        $T = ' ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci';
+        db()->exec("CREATE TABLE IF NOT EXISTS analytics_hits (
+            id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+            ts DATETIME NOT NULL,
+            last_seen DATETIME NOT NULL,
+            day DATE NOT NULL,
+            kind VARCHAR(10) NOT NULL DEFAULT 'pageview',
+            event VARCHAR(60) NULL,
+            meta VARCHAR(255) NULL,
+            visitor CHAR(16) NOT NULL,
+            session CHAR(16) NOT NULL,
+            is_new TINYINT(1) NOT NULL DEFAULT 0,
+            path VARCHAR(255) NOT NULL,
+            title VARCHAR(200) NULL,
+            ref_host VARCHAR(120) NULL,
+            referrer VARCHAR(255) NULL,
+            utm_source VARCHAR(80) NULL,
+            utm_medium VARCHAR(80) NULL,
+            utm_campaign VARCHAR(80) NULL,
+            country CHAR(2) NULL,
+            region VARCHAR(80) NULL,
+            city VARCHAR(80) NULL,
+            device VARCHAR(10) NULL,
+            browser VARCHAR(30) NULL,
+            os VARCHAR(30) NULL,
+            lang VARCHAR(12) NULL,
+            screen_w SMALLINT UNSIGNED NULL,
+            user_id INT UNSIGNED NULL,
+            role VARCHAR(12) NULL,
+            duration INT UNSIGNED NOT NULL DEFAULT 0,
+            scroll TINYINT UNSIGNED NOT NULL DEFAULT 0,
+            KEY idx_ah_ts (ts),
+            KEY idx_ah_seen (last_seen),
+            KEY idx_ah_day (day, kind),
+            KEY idx_ah_visitor (visitor, ts),
+            KEY idx_ah_session (session)
+        )$T");
+        db()->exec("CREATE TABLE IF NOT EXISTS analytics_bots (
+            day DATE NOT NULL,
+            bot VARCHAR(40) NOT NULL,
+            hits INT UNSIGNED NOT NULL DEFAULT 0,
+            last_path VARCHAR(255) NULL,
+            last_at DATETIME NULL,
+            PRIMARY KEY (day, bot)
+        )$T");
     }
     db_exec("REPLACE INTO settings (k, v) VALUES ('db_version', ?)", [(string)DB_VERSION]);
 }

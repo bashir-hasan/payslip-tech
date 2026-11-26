@@ -74,7 +74,9 @@ send_security_headers($appCode);
         <?= $link('/me/documents', 'me-docs', 'award', t('My documents')) ?>
         <?= $link('/me/leave', 'me-leave', 'calendar', t('Leave & advances')) ?>
       <?php elseif ($cu['role'] === 'admin'): ?>
-        <?= $link('/admin', 'admin', 'chart', t('Overview')) ?>
+        <?= $link('/admin', 'admin', 'dashboard', t('Overview')) ?>
+        <?php $liveNow = (int)db_val("SELECT COUNT(DISTINCT visitor) FROM analytics_hits WHERE last_seen >= ? AND kind = 'pageview'", [date('Y-m-d H:i:s', strtotime('-' . ANALYTICS_LIVE_MINUTES . ' minutes'))]); ?>
+        <?= $link('/admin/analytics', 'admin-analytics', 'chart', t('Analytics'), $liveNow ?: null) ?>
         <?= $link('/admin/companies', 'admin-companies', 'building', t('Companies')) ?>
         <?= $link('/admin/users', 'admin-users', 'users', t('Users')) ?>
         <?= $link('/admin/verifications', 'admin-verifications', 'shield', t('Verifications')) ?>

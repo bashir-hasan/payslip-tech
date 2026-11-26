@@ -172,6 +172,7 @@ function public_demo_login(): void
     if (!setting('demo_enabled', '0')) abort(404);
     $u = db_one("SELECT * FROM users WHERE email = ? AND role = 'employer'", [(string)setting('demo_email', 'demo@payslip.tech')]);
     if (!$u) abort(404);
+    analytics_event('demo_open');
     login_user($u);
     flash('success', t('You are exploring the demo company. Feel free to try everything.'));
     redirect('/app');

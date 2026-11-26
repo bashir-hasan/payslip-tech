@@ -12,6 +12,7 @@ $tw = setting('seo_twitter');
 ?>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<?php if (analytics_enabled()): ?><meta name="pst-an" content="<?= e(rtrim(url('/a'), '/')) ?>"><?php endif; ?>
 <title><?= e($pageTitle) ?></title>
 <meta name="description" content="<?= e($desc) ?>">
 <?php if ($indexable): ?>

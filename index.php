@@ -20,10 +20,12 @@ if ($method === 'GET' && isset($_GET['lang']) && in_array($_GET['lang'], ['en', 
     set_lang($_GET['lang']);
 }
 
+analytics_count_bot($path);
+
 foreach ($routes as [$m, $pattern, $handler]) {
     if ($m !== $method && !($m === 'GET' && $method === 'HEAD')) continue;
     if (preg_match('#^' . $pattern . '$#', $path, $mt)) {
-        if ($method === 'POST' && !str_starts_with($path, '/webhooks/') && !in_array($path, ['/mcp', '/a2a'], true)) csrf_check();
+        if ($method === 'POST' && !str_starts_with($path, '/webhooks/') && !in_array($path, ['/mcp', '/a2a', '/a/collect', '/a/ping'], true)) csrf_check();
         $args = array_values(array_filter($mt, 'is_int', ARRAY_FILTER_USE_KEY));
         array_shift($args);
         $handler(...$args);

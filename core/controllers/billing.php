@@ -34,6 +34,7 @@ function emp_billing_checkout(string $planKey): void
     ]);
     if ($code >= 200 && $code < 300 && !empty($res['url']) && str_starts_with((string)$res['url'], 'https://')) {
         audit('Started checkout for ' . $planKey . ' plan', (int)$c['id']);
+        analytics_event('checkout_start', $planKey);
         redirect((string)$res['url']);
     }
     error_log('[payslip] Polar checkout failed: HTTP ' . $code . ' ' . json_encode($res));

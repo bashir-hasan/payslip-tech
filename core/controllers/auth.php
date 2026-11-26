@@ -155,6 +155,7 @@ function auth_register(): void
     $pdo->commit();
     clear_old();
     login_user(db_one('SELECT * FROM users WHERE id = ?', [$uid]));
+    analytics_event('sign_up', $country);
     log_activity($cid, 'Company account created');
     flash('success', t('Welcome! Start by completing your company profile.'));
     redirect('/app');

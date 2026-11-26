@@ -330,4 +330,78 @@
       var m = $('#main'); if (m) m.focus({ preventScroll: true });
     });
   })();
+  // v2.0: first-party analytics. No cookies or storage; nothing is sent when the browser asks not to be tracked.
+  (function () {
+    var meta = document.querySelector('meta[name="pst-an"]');
+    if (!meta || !window.fetch) return;
+    if (navigator.globalPrivacyControl || navigator.doNotTrack === '1' || window.doNotTrack === '1') return;
+    var base = meta.getAttribute('content'), id = null, visible = 0, last = Date.now(), maxScroll = 0;
+    var post = function (url, data, beacon) {
+      var body = JSON.stringify(data);
+      if (beacon && navigator.sendBeacon) { try { return navigator.sendBeacon(url, new Blob([body], { type: 'application/json' })); } catch (e) {} }
+      return fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: body, keepalive: true, credentials: 'same-origin' });
+    };
+    var q = []; location.search.replace(/^\?/, '').split('&').forEach(function (kv) { if (/^(utm_[a-z]+|ref)=/.test(kv)) q.push(kv); });
+    post(base + '/collect', { p: location.pathname, u: q.length ? '?' + q.join('&') : '', r: document.referrer, t: document.title, w: screen.width, l: navigator.language })
+      .then(function (r) { return r.json(); }).then(function (d) { id = d && d.id; }).catch(function () {});
+    var tickTime = function () { var n = Date.now(); if (document.visibilityState === 'visible') visible += (n - last) / 1000; last = n; };
+    window.addEventListener('scroll', function () {
+      var h = document.documentElement, max = h.scrollHeight - h.clientHeight;
+      var p = max > 0 ? Math.round(h.scrollTop / max * 100) : 100; if (p > maxScroll) maxScroll = p;
+    }, { passive: true });
+    var ping = function (beacon) { tickTime(); if (id) post(base + '/ping', { id: id, s: Math.round(visible), sc: maxScroll }, beacon); };
+    setInterval(function () { if (document.visibilityState === 'visible') ping(false); }, 15000);
+    document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'hidden') ping(true); else last = Date.now(); });
+    window.addEventListener('pagehide', function () { ping(true); });
+    window.pstTrack = function (name, m) { post(base + '/collect', { e: name, m: m || '', p: location.pathname }, true); };
+    document.addEventListener('click', function (e) {
+      var t = e.target.closest && e.target.closest('[data-track], .cw-fab');
+      if (!t) return;
+      if (t.classList.contains('cw-fab')) { if ($('.cw-panel') && $('.cw-panel').hidden) window.pstTrack('chat_open'); return; }
+      window.pstTrack(t.getAttribute('data-track'), t.getAttribute('data-track-meta') || '');
+    }, true);
+  })();
+
+  // v2.0: admin live analytics refresh
+  (function () {
+    var box = $('[data-live-url]');
+    if (!box) return;
+    var url = box.getAttribute('data-live-url');
+    var el = function (tag, cls, text) { var n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
+    var dev = { mobile: 'Mobile', desktop: 'Desktop', tablet: 'Tablet' };
+    var draw = function (d) {
+      $('[data-live-count]', box).textContent = d.count;
+      $('[data-live-at]', box).textContent = d.at;
+      var rows = $('[data-live-rows]', box); rows.textContent = '';
+      if (!d.visitors.length) { var tr = el('tr'); var td = el('td', 'muted', 'Nobody is browsing right now.'); td.colSpan = 5; tr.appendChild(td); rows.appendChild(tr); }
+      d.visitors.forEach(function (v) {
+        var tr = el('tr'), who = el('td');
+        who.appendChild(el('span', 'flag', v.flag)); who.appendChild(document.createTextNode(' '));
+        if (v.user) { who.appendChild(el('b', '', v.user.name)); who.appendChild(document.createTextNode(' ')); who.appendChild(el('span', 'badge plain', v.user.role)); }
+        else who.appendChild(document.createTextNode(v.place || 'Unknown'));
+        if (v.is_new) { who.appendChild(document.createTextNode(' ')); who.appendChild(el('span', 'badge badge-brand plain', 'new')); }
+        tr.appendChild(who);
+        tr.appendChild(el('td', 'mono small', v.path));
+        tr.appendChild(el('td', '', v.source));
+        tr.appendChild(el('td', 'small', (dev[v.device] || v.device || '') + ' · ' + (v.browser || '')));
+        tr.appendChild(el('td', 'num small', v.in_visit + ' · ' + v.pages + ' pages'));
+        rows.appendChild(tr);
+      });
+      var mins = $('[data-live-mins]', box), mx = 1;
+      d.minutes.forEach(function (m) { if (m.n > mx) mx = m.n; });
+      $$('i', mins).forEach(function (i, k) { var m = d.minutes[k]; if (m) { i.style.height = Math.max(4, Math.round(m.n / mx * 100)) + '%'; i.title = m.m + ' · ' + m.n; } });
+      var ev = $('[data-live-events]', box); ev.textContent = '';
+      if (!d.events.length) ev.appendChild(el('li', 'muted small', 'Sign-ups, demo visits, checkouts and button clicks appear here.'));
+      d.events.forEach(function (x) {
+        var li = el('li'); li.appendChild(el('span', 'flag', x.flag));
+        var sp = el('span'); sp.appendChild(el('b', '', x.event.replace(/_/g, ' ')));
+        sp.appendChild(document.createTextNode((x.meta ? ' · ' + x.meta : '') + (x.user ? ' · ' + x.user : '')));
+        sp.appendChild(el('em', '', x.ago)); li.appendChild(sp); ev.appendChild(li);
+      });
+    };
+    setInterval(function () {
+      if (document.visibilityState !== 'visible') return;
+      fetch(url, { credentials: 'same-origin', headers: { Accept: 'application/json' } }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) { if (d) draw(d); }).catch(function () {});
+    }, 10000);
+  })();
 })();

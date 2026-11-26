@@ -147,5 +147,7 @@ function run_retention(): array
         db_exec("DELETE FROM chat_sessions WHERE id IN ($in)");
     }
     db_exec('DELETE FROM shares WHERE expires_at < ? OR revoked_at < ?', [$d('-6 months'), $d('-6 months')]);
+    db_exec('DELETE FROM analytics_hits WHERE day < ?', [date('Y-m-d', strtotime('-13 months'))]);
+    db_exec('DELETE FROM analytics_bots WHERE day < ?', [date('Y-m-d', strtotime('-13 months'))]);
     return ['Retention clean-up done (' . count($old) . ' old chats removed)'];
 }

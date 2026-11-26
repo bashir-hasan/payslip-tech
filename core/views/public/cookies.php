@@ -19,6 +19,8 @@
     <p>We currently use no analytics or marketing cookies.</p>
   <?php endif; ?>
   <p>We use no advertising cookies. Fonts and scripts are served from our own server, so your browser does not contact Google Fonts or similar services.</p>
+  <h2>Statistics without cookies</h2>
+  <p>Our own visit statistics use no cookies and store nothing in your browser. Visitors are counted with a code that changes every day and IP addresses are not stored. Browsers that send Do Not Track or Global Privacy Control are not counted. See section 2 of our <a href="<?= e(url('/privacy')) ?>">Privacy Policy</a>.</p>
   <?php if (has_custom_scripts()): ?>
   <h2>Change your choice</h2>
   <p>Your current choice: <b><?= e(consent_state() === 'all' ? 'Accept all' : (consent_state() === 'essential' ? 'Essential only' : 'Not chosen yet')) ?></b>.</p>

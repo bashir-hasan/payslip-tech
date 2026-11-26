@@ -20,7 +20,8 @@
     <li><b>Billing:</b> plan, subscription status and Polar customer ID. Card details are entered on Polar's checkout and never reach our servers.</li>
     <li><b>Support chat:</b> the messages you send and, if you give them, your name and email.</li>
     <li><b>Security logs:</b> sign-in times, IP address and actions taken in an account (for example "issued payslips").</li>
-    <li><b>Cookies:</b> see our <a href="<?= e(url('/cookies')) ?>">Cookie Policy</a>. Analytics run only if you accept them.</li>
+    <li><b>Site statistics (no cookies):</b> the pages you open, how long you stay and how far you scroll, the site that sent you, campaign tags in the link, approximate country (and city, if our network provider supplies it), device type, browser, operating system and language. You are counted with a code made from your IP address and browser that changes every day, so we cannot follow you from one day to the next, and your IP address is not stored. If you are signed in, the visit is linked to your account so we can give support and keep accounts secure. Search engine and AI crawlers are counted by name only. We keep these statistics for 13 months. If your browser sends Do Not Track or Global Privacy Control, nothing is recorded.</li>
+    <li><b>Cookies:</b> see our <a href="<?= e(url('/cookies')) ?>">Cookie Policy</a>. Third-party analytics such as Google Analytics run only if you accept them.</li>
   </ul>
 
   <h2 id="bases">3. Why we use it and our legal bases</h2>
@@ -32,7 +33,8 @@
       <tr><td>Security, abuse prevention, rate limiting and audit logs</td><td>Legitimate interests (6(1)(f)); legal obligation where applicable (6(1)(c))</td></tr>
       <tr><td>Billing and accounting records</td><td>Contract (6(1)(b)) and legal obligation (6(1)(c))</td></tr>
       <tr><td>Account emails (invitations, password resets, reminders you switch on)</td><td>Contract (6(1)(b))</td></tr>
-      <tr><td>Website analytics and marketing tags</td><td>Consent (6(1)(a)), which you can withdraw at any time</td></tr>
+      <tr><td>Cookieless site statistics on our own server, to see which pages help people and fix what doesn't</td><td>Legitimate interests (6(1)(f)); you can opt out with Do Not Track or Global Privacy Control</td></tr>
+      <tr><td>Third-party analytics and marketing tags (for example Google Analytics)</td><td>Consent (6(1)(a)), which you can withdraw at any time</td></tr>
     </tbody>
   </table></div>
   <p>We do not sell personal data, do not use it for advertising, and do not use it to train AI models. The smart assistant and smart import run on our own server; every change they suggest is shown to you before it is applied, so no decision with legal effect is made automatically.</p>
