@@ -140,9 +140,11 @@ $dev = ['mobile' => 'Mobile', 'desktop' => 'Desktop', 'tablet' => 'Tablet'];
         <summary>
           <span class="flag"><?= country_flag($v['country']) ?></span>
           <span class="who"><?= $u ? '<b>' . e($u['name']) . '</b> <span class="small muted">' . e($u['email']) . '</span>' : e(trim(($v['city'] ? $v['city'] . ', ' : '') . visitor_country_name($v['country']))) ?><?= $v['is_new'] ? ' <span class="badge badge-brand plain">' . e(t('new')) . '</span>' : '' ?></span>
-          <span class="small muted"><?= e(analytics_source($v)) ?></span>
+          <span class="meta">
+            <span class="small muted"><?= e(analytics_source($v)) ?></span>
           <span class="small muted"><?= e(($dev[$v['device']] ?? $v['device']) . ' · ' . $v['browser'] . ' · ' . $v['os']) ?></span>
-          <span class="small"><?= e(sprintf(t('%d pages'), $v['pages'])) ?> · <?= e(fmt_secs((int)$v['secs'])) ?></span>
+            <span class="small"><?= e(sprintf(t('%d pages'), $v['pages'])) ?> · <?= e(fmt_secs((int)$v['secs'])) ?></span>
+          </span>
           <span class="small muted num"><?= e(time_ago($v['started'])) ?></span>
         </summary>
         <ol class="trail">
